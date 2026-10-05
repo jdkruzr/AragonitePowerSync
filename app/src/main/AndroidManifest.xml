@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+ <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+ <queries>
+  <package android:name="com.onyx.android.note" />
+  <package android:name="com.onyx.android.ksync" />
+  <provider android:authorities="com.onyx.android.sdk.note.ContentProvider;com.onyx.android.sdk.shape.ContentProvider" />
+ </queries>
+ <application android:label="PowerSync Probe" android:allowBackup="false" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+  <activity android:name=".MainActivity" android:exported="true">
+   <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+  </activity>
+ </application>
+</manifest>
