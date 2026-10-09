@@ -3,7 +3,8 @@
  <queries>
   <package android:name="com.onyx.android.note" />
   <package android:name="com.onyx.android.ksync" />
-  <provider android:authorities="com.onyx.android.sdk.note.ContentProvider;com.onyx.android.sdk.shape.ContentProvider" />
+  <package android:name="com.onyx.kreader" />
+  <provider android:authorities="com.onyx.android.sdk.note.ContentProvider;com.onyx.android.sdk.shape.ContentProvider;com.onyx.android.sdk.sync.KSyncRecordContentProvider" />
  </queries>
  <application android:label="PowerSync Probe" android:allowBackup="false" android:theme="@android:style/Theme.Material.Light.NoActionBar">
   <activity android:name=".MainActivity" android:exported="true">

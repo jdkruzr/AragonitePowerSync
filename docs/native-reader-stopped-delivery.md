@@ -1,0 +1,15 @@
+# Delivery with receiver Reader force-stopped
+
+2026-10-08. Owned clean-v2 PDF only; both native baselines contain 18 shape records and 12 pressure files. Evidence: `artifacts/gateway-lab/qualification/reader-native-stopped-reader-delivery/`.
+
+10.3 II Reader was force-stopped and PID absence verified before source save; ksync remained running. Palma user drew S left of R and left the PDF open. Screenshot confirms the pen toolbar was already closed, so one Back closes/saves the source. Actual native sessions had over 500 seconds remaining at preflight, exceeding the 180-second observation and 300-second guard. Reader-only global flags remain exact. No injected fault, helper call, SDK pull, native login, host publication or source reopen is used during observation.
+
+For 120 seconds, the driver samples server state and checks receiver Reader PID every ten seconds. A separately timed ordinary VIEW intent opens the fixed receiver PDF, followed by 60 seconds without helper/SDK import. Final SDK exports are observation after this native-open window, not the delivery mechanism. Read-only helper capture guards may admit only exact owned annotated derivatives collected after native save/open; native push/requeue permissions are unchanged.
+
+Results and preservation checks are appended after qualification. Force-stop is a stronger condition than merely Home, but does not qualify stopped ksync, screen-off, reboot or a fresh installation.
+
+Result: PASS. Two native asset PUTs succeed (last about 1.28 seconds after source Back command); the receiver begins its first of two successful GETs about 2.23 seconds after that command. All twelve stopped-window PID checks show Reader absent. Ksync logs its data-change notification, but Reader is not resurrected. Normal launch about 124 seconds after source Back starts a new Reader process, reports needPull=true, and completes native import about 4.76 seconds after the launch intent. The first pre-helper screenshot shows S. Command-relative timings include local save and process launch; they are not exact native-save durations.
+
+Final exports contain 19 shapes and 13 pressure files on both devices. The new S record matches across devices, all earlier records match their own baselines except local UPDATEDAT/OBJECTID, and all 13 pressure payloads match across devices. Original notebook and unrelated Reader guards pass; the sole notebook comparison exception remains the user-confirmed Palma addition. No SDK pull, host publication or manual Sync was used. After observation, receiver Home saves a new exact owned PDF derivative; read-only inspection guards admit only the two observed source/receiver SHA256s. Build/lint pass and signature-matched in-place helper installs preserve data.
+
+Facade implication: a live app notification is not required for this fresh-timestamp cold Reader import. Durable ksync cache and cloud metadata survive missed notifications; ordinary app startup checks them. This does not prove stopped-daemon delivery or screen-off behavior, nor cure the previous stale-timestamp import gate. Native application should be reported separately from cached receipt.

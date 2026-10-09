@@ -26,12 +26,14 @@ def blob(field, value):
 def floating(field, value):
     return varint((field << 3) | 5) + struct.pack('<f', value)
 
-def make(report, output, previous=None, removed=False):
+def make(report, output, previous=None, removed=False, page_index=0, layer=0):
     note = report['note']
     if not note['title'].startswith('PowerSync ink ') or note['activeScene'] != 0:
         raise ValueError('Not a PowerSync ink fixture')
     doc = note['uniqueId']
-    page = report['pages']['pageIds'][0]
+    if not 0 <= layer <= 100 or not 0 <= page_index < len(report['pages']['pageIds']):
+        raise ValueError('Invalid fixture layer or page index')
+    page = report['pages']['pageIds'][page_index]
     for identity in (doc, page):
         if not re.fullmatch(r'[0-9a-fA-F-]{32,36}', identity):
             raise ValueError('Invalid native identity')
@@ -51,7 +53,7 @@ def make(report, output, previous=None, removed=False):
                 newBrushRatio=0.0, pressure=2048.0, pressureSensitivity=1.0,
                 smoothLevel=0.2, source=1, tiltX=0, tiltY=0)
     shape_pb = b''.join((blob(1, shape), number(2, created), number(3, stamp),
-                        number(4, 0xffffffffff000000), floating(5, 8.0),
+                        number(4, 0xffffffffff000000), floating(5, 8.0), number(6, layer),
                         blob(7, json.dumps(bounds)), blob(11, json.dumps(args)),
                         number(12, 3), number(15, int(removed)), blob(16, points_revision), blob(18, revision)))
     filename = f'{page}#{revision}#{stamp}'
@@ -76,6 +78,9 @@ if __name__ == '__main__':
     parser.add_argument('output', type=pathlib.Path)
     parser.add_argument('--previous', type=pathlib.Path)
     parser.add_argument('--remove', action='store_true')
+    parser.add_argument('--page-index', type=int, default=0)
+    parser.add_argument('--layer', type=int, default=0)
     a = parser.parse_args()
     print(json.dumps(make(json.loads(a.metadata.read_text()), a.output,
-                          json.loads(a.previous.read_text()) if a.previous else None, a.remove), indent=2))
+                          json.loads(a.previous.read_text()) if a.previous else None, a.remove,
+                          a.page_index, a.layer), indent=2))

@@ -74,7 +74,10 @@ final class FixtureRunner {
   return new JSONObject().put("documentId",id).put("nativeCloudSyncDisabled",true);
  }
  JSONObject export() throws Exception {
-  JSONObject row=find(); String token="PowerSync-export-"+UUID.randomUUID();
+  return exportRow(find());
+ }
+ JSONObject exportRow(JSONObject row) throws Exception {
+  String token="PowerSync-export-"+UUID.randomUUID();
   java.util.concurrent.CompletableFuture<JSONObject> result=new java.util.concurrent.CompletableFuture<>();
   BroadcastReceiver receiver=new BroadcastReceiver() {
    public void onReceive(Context c,Intent intent) {

@@ -16,7 +16,7 @@ public final class MainActivity extends Activity {
   super.onCreate(state);
   LinearLayout layout=new LinearLayout(this); layout.setOrientation(LinearLayout.VERTICAL); layout.setPadding(24,24,24,24);
   TextView heading=new TextView(this); heading.setText("PowerSync — native adapter lab"); heading.setTextSize(24); layout.addView(heading);
-  TextView intro=new TextView(this); intro.setText("Read-only probes run as this app. Fixture commands affect only a disposable note created by PowerSync. Full sync is not enabled."); layout.addView(intro);
+  TextView intro=new TextView(this); intro.setText("Native BOOX experiment tools. Fixture buttons operate on disposable notes. Saved reports and server observations provide the test results."); layout.addView(intro);
   add(layout,"Probe native interfaces",() -> new ProbeRunner(this).run(),"probe.json");
   Button storage=new Button(this); storage.setText("Grant All Files Access"); storage.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,Uri.parse("package:"+getPackageName())))); layout.addView(storage);
   add(layout,"Create disposable text fixture",() -> new FixtureRunner(this).create(),"fixture-create.json");
@@ -25,7 +25,7 @@ public final class MainActivity extends Activity {
   add(layout,"Export native fixture archive",() -> new FixtureRunner(this).export(),"fixture-export.json");
   add(layout,"Write fixture text resource (close Notes first)",() -> new FixtureRunner(this).writeTextResource(),"fixture-write.json");
   Button open=new Button(this); open.setText("Open fixture in BOOX Notes"); open.setOnClickListener(v -> worker.execute(() -> {try{Intent intent=new FixtureRunner(this).open();runOnUiThread(() -> startActivity(intent));}catch(Exception e){show(e.toString());}})); layout.addView(open);
-  ScrollView scroll=new ScrollView(this); output=new TextView(this); output.setTextIsSelectable(true); scroll.addView(output); layout.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));setContentView(layout);
+  ScrollView scroll=new ScrollView(this); output=new TextView(this); output.setText("Ready. No lab action is running in this window."); output.setTextIsSelectable(true); scroll.addView(output); layout.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));setContentView(layout);
   handleDebugIntent(getIntent());
  }
  protected void onNewIntent(Intent intent) { super.onNewIntent(intent);setIntent(intent);handleDebugIntent(intent); }
@@ -33,6 +33,113 @@ public final class MainActivity extends Activity {
   String action=intent.getStringExtra("lab_action");
   if(!BuildConfig.DEBUG || action == null) return;
   switch(action) {
+   case "v2_work_insert" -> execute(() -> new NativeWorkQueueLab(this).insert(),"v2-work-insert.json");
+   case "v2_work_capture" -> execute(() -> new NativeWorkQueueLab(this).capture(),"v2-work-capture.json");
+   case "v2_work_remove" -> execute(() -> new NativeWorkQueueLab(this).remove(),"v2-work-remove.json");
+   case "library_inventory" -> execute(() -> new NativeLibraryLab(this).inventory(),"library-inventory.json");
+   case "reader_fixture_bookmark_revision" -> execute(() -> new NativeReaderLab(this).refreshBookmark(),"reader-fixture-bookmark-revision.json");
+   case "reader_fixture_identity_earlier" -> execute(() -> new NativeReaderLab(this).reorderIdentity(false),"reader-fixture-identity-earlier.json");
+   case "reader_fixture_identity_restore" -> execute(() -> new NativeReaderLab(this).reorderIdentity(true),"reader-fixture-identity-restore.json");
+   case "reader_fixture_pull_full" -> execute(() -> new NativeReaderLab(this).pullFullUserData(),"reader-fixture-pull-full.json");
+   case "reader_fixture_capture" -> execute(() -> new NativeReaderLab(this).capture(),"reader-fixture-capture.json");
+   case "reader_pdf_capture" -> execute(() -> new NativeReaderPdfLab(this).capture(),"reader-pdf-capture.json");
+   case "reader_pdf_export" -> execute(() -> new NativeReaderPdfLab(this).export(),"reader-pdf-export.json");
+   case "reader_pdf_export_managed" -> execute(() -> new NativeReaderPdfLab(this).export(true),"reader-pdf-export.json");
+   case "reader_pdf_pull_full_source" -> execute(() -> new NativeReaderPdfLab(this).pullFullSource(),"reader-pdf-sync.json");
+   case "reader_history_enroll" -> execute(() -> new NativeHistoryReaderLab(this).enroll(),"reader-history-enroll.json");
+   case "reader_history_capture" -> execute(() -> new NativeHistoryReaderLab(this).capture(),"reader-history-capture.json");
+   case "reader_history_export" -> execute(() -> new NativeHistoryReaderLab(this).export(),"reader-history-export.json");
+   case "reader_history_query" -> execute(() -> new NativeHistoryReaderLab(this).queryFull(),"reader-history-query.json");
+   case "reader_history_start" -> execute(() -> new NativeHistoryReaderLab(this).startLibrary(true),"reader-history-start.json");
+   case "reader_history_pull" -> execute(() -> new NativeHistoryReaderLab(this).syncNative(false,false),"reader-history-pull.json");
+   case "reader_history_full" -> execute(() -> new NativeHistoryReaderLab(this).pullFullSource(),"reader-history-full.json");
+   case "native_restored_wake" -> execute(() -> NativeCatalogRestoreLab.wake(this),"native-restored-wake.json");
+   case "catalog_restore_original" -> execute(() -> NativeCatalogRestoreLab.restore(this),"catalog-restore-original.json");
+   case "reader_config_refresh" -> execute(() -> new NativeFreshReaderPdfLab(this).notifyConfigChange(),"reader-config-refresh.json");
+   case "reader_fresh_capture" -> execute(() -> new NativeFreshReaderPdfLab(this).capture(),"reader-fresh-pdf-capture.json");
+   case "reader_fresh_auto_sync" -> execute(() -> new NativeFreshReaderPdfLab(this).enableAutoSync(),"reader-fresh-auto-sync.json");
+   case "reader_fresh_export" -> execute(() -> new NativeFreshReaderPdfLab(this).export(),"reader-fresh-pdf-export.json");
+   case "reader_fresh_push" -> execute(() -> new NativeFreshReaderPdfLab(this).syncNative(false,true),"reader-fresh-pdf-sync.json");
+   case "reader_fresh_pull" -> execute(() -> new NativeFreshReaderPdfLab(this).syncNative(false,false),"reader-fresh-pdf-sync.json");
+   case "reader_fresh_pull_full" -> execute(() -> new NativeFreshReaderPdfLab(this).pullFullSource(),"reader-fresh-pdf-sync.json");
+   case "reader_fresh_publish_config" -> execute(() -> new NativeFreshReaderPdfLab(this).publishConfigConflict(),"reader-fresh-config-publication.json");
+   case "reader_fresh_query" -> execute(() -> new NativeFreshReaderPdfLab(this).queryFull(),"reader-fresh-pdf-query.json");
+   case "reader_fresh_query_metadata" -> execute(() -> new NativeFreshReaderPdfLab(this).queryMetadata(),"reader-fresh-pdf-query-metadata.json");
+   case "reader_fresh_restart" -> execute(() -> new NativeFreshReaderPdfLab(this).restartLibrary(),"reader-fresh-pdf-restart.json");
+   case "reader_fresh_restart_job" -> execute(() -> new NativeFreshReaderPdfLab(this).restartOwnedDocJob(),"reader-fresh-restart-job.json");
+   case "reader_fresh_requeue" -> execute(() -> new NativeFreshReaderPdfLab(this).requeueCurrentUserData(),"reader-fresh-requeue.json");
+   case "reader_fresh_start" -> execute(() -> new NativeFreshReaderPdfLab(this).startLibrary(true),"reader-fresh-pdf-start.json");
+   case "reader_pdf_push_peer" -> execute(() -> new NativeReaderPdfLab(this).syncNative(true,true),"reader-pdf-sync.json");
+   case "reader_pdf_pull_source" -> execute(() -> new NativeReaderPdfLab(this).syncNative(false,false),"reader-pdf-sync.json");
+   case "reader_pdf_sync_source" -> execute(() -> new NativeReaderPdfLab(this).syncNative(false),"reader-pdf-sync.json");
+   case "reader_pdf_sync_peer" -> execute(() -> new NativeReaderPdfLab(this).syncNative(true),"reader-pdf-sync.json");
+   case "reader_pdf_restart" -> execute(() -> new NativeReaderPdfLab(this).restartLibrary(),"reader-pdf-restart.json");
+   case "reader_pdf_query_metadata" -> execute(() -> new NativeReaderPdfLab(this).queryMetadata(),"reader-pdf-query-metadata.json");
+   case "reader_pdf_query" -> execute(() -> new NativeReaderPdfLab(this).queryFull(),"reader-pdf-query.json");
+   case "reader_pdf_stage_peer_metadata" -> execute(() -> new NativeReaderPdfLab(this).stagePeerMetadata(),"reader-pdf-stage-peer-metadata.json");
+   case "reader_pdf_start" -> execute(() -> new NativeReaderPdfLab(this).startLibrary(true),"reader-pdf-start.json");
+   case "reader_pdf_enroll_peer" -> execute(() -> new NativeReaderPdfLab(this).enrollPeer(),"reader-pdf-enroll-peer.json");
+   case "reader_pdf_restore_owned" -> execute(() -> new NativeReaderPdfLab(this).restoreOwned(),"reader-pdf-restore-owned.json");
+   case "reader_pdf_publish_metadata" -> execute(() -> new NativeReaderPdfLab(this).publishMetadata(),"reader-pdf-publish-metadata.json");
+   case "reader_pdf_upload" -> execute(() -> new NativeReaderPdfLab(this).transfer(true),"reader-pdf-upload.json");
+   case "reader_pdf_download" -> execute(() -> new NativeReaderPdfLab(this).transfer(false),"reader-pdf-download.json");
+   case "reader_library_guard" -> execute(() -> new NativeReaderLab(this).libraryGuard(),"reader-library-guard.json");
+   case "reader_fixture_publish" -> execute(() -> new NativeReaderLab(this).request(false),"reader-fixture-publish.json");
+   case "reader_fixture_bookmarks" -> execute(() -> new NativeReaderLab(this).request("bookmarks"),"reader-fixture-bookmarks.json");
+   case "reader_fixture_annotations" -> execute(() -> new NativeReaderLab(this).request("annotations"),"reader-fixture-annotations.json");
+   case "reader_fixture_cloud_start" -> execute(() -> new NativeReaderLab(this).startScopedCloudLibraryReplicator(),"reader-fixture-cloud-start.json");
+   case "reader_fixture_cloud_restart" -> execute(() -> new NativeReaderLab(this).startScopedCloudLibraryReplicator(true),"reader-fixture-cloud-restart.json");
+   case "reader_fixture_query_cloud_metadata" -> execute(() -> new NativeReaderLab(this).pullFullUserData(true),"reader-fixture-query-cloud-metadata.json");
+   case "reader_fixture_cloud_capture" -> execute(() -> new NativeReaderLab(this).captureCloudBook(),"reader-fixture-cloud-capture.json");
+   case "reader_fixture_conflict_edit" -> execute(() -> new NativeReaderLab(this).editCloudConflict(),"reader-fixture-conflict-edit.json");
+   case "reader_fixture_conflict_publish" -> execute(() -> new NativeReaderLab(this).publishCloudConflict(),"reader-fixture-conflict-publish.json");
+   case "reader_fixture_cloud_comment" -> execute(() -> new NativeReaderLab(this).editCloudFixtureComment(),"reader-fixture-cloud-comment.json");
+   case "reader_fixture_library_delta" -> execute(() -> new NativeReaderLab(this).syncBookFromLibrary(true),"reader-fixture-library-delta.json");
+   case "reader_fixture_library_sync" -> execute(() -> new NativeReaderLab(this).syncBookFromLibrary(),"reader-fixture-library-sync.json");
+   case "reader_fixture_book_prepare" -> execute(() -> new NativeReaderLab(this).prepareBookTransfer(),"reader-fixture-book-prepare.json");
+   case "reader_fixture_book_upload" -> execute(() -> new NativeReaderLab(this).transferBook(true),"reader-fixture-book-upload.json");
+   case "reader_fixture_book_download" -> execute(() -> new NativeReaderLab(this).transferBook(false),"reader-fixture-book-download.json");
+   case "reader_fixture_start" -> execute(() -> new NativeReaderLab(this).request(true),"reader-fixture-start.json");
+   case "reader_fixture_restore" -> execute(() -> new NativeReaderLab(this).restoreFixtureFlags(),"reader-fixture-restore.json");
+   case "library_export_one" -> execute(() -> new NativeLibraryLab(this).exportOne(),"library-export-one.json");
+   case "conflict_capture" -> execute(() -> new NativeConflictLab(this).capture(),"conflict-capture.json");
+   case "conflict_edit" -> execute(() -> new NativeConflictLab(this).change("edit"),"conflict-edit.json");
+   case "conflict_remove" -> execute(() -> new NativeConflictLab(this).change("remove"),"conflict-remove.json");
+   case "conflict_restore" -> execute(() -> new NativeConflictLab(this).change("restore"),"conflict-restore.json");
+   case "endpoint_status" -> execute(() -> new NativeEndpointLab(this).status(),"endpoint-status.json");
+   case "endpoint_provision" -> execute(() -> new NativeEndpointLab(this).provision(false),"endpoint-provision.json");
+   case "endpoint_provision_marker" -> execute(() -> new NativeEndpointLab(this).provision(true),"endpoint-provision-marker.json");
+   case "endpoint_reassert" -> execute(() -> new NativeEndpointLab(this).reassert(),"endpoint-reassert.json");
+   case "endpoint_enable" -> execute(() -> new NativeEndpointLab(this).flags(false),"endpoint-enable.json");
+   case "endpoint_flags_restore" -> execute(() -> new NativeEndpointLab(this).flags(true),"endpoint-flags-restore.json");
+   case "endpoint_restore" -> execute(() -> new NativeEndpointLab(this).restore(),"endpoint-restore.json");
+   case "cluster_uid_probe" -> execute(() -> new NativeSystemConfigProbe().run(),"cluster-uid-probe.json");
+   case "editor_switch_foreground" -> execute(() -> new NativeEditorCloseLab(this).switchForeground(),"editor-switch-foreground.json");
+   case "editor_switch_arm" -> execute(() -> new NativeEditorCloseLab(this).switchArm(true),"editor-switch-arm.json");
+   case "editor_same_arm" -> execute(() -> new NativeEditorCloseLab(this).switchArm(false),"editor-same-arm.json");
+   case "editor_quit_arm" -> execute(() -> new NativeEditorCloseLab(this).arm(true),"editor-quit-arm.json");
+   case "editor_noop_arm" -> execute(() -> new NativeEditorCloseLab(this).arm(false),"editor-noop-arm.json");
+   case "gateway_selected_enable" -> execute(() -> new NativeGatewayLab(this).selectedEnable(),"gateway-selected-enable.json");
+   case "richtext_recovery_apply" -> execute(() -> new NativeRichTextRecoveryLab(this).apply(),"richtext-recovery-apply.json");
+   case "gateway_tree_query" -> execute(() -> new NativeGatewayLab(this).querySelectedTree(),"gateway-tree-query.json");
+   case "gateway_restart_tree" -> execute(() -> new NativeGatewayLab(this).restartTree(),"gateway-restart-tree.json");
+   case "gateway_selected_capture" -> execute(() -> new NativeGatewayLab(this).selectedCapture(),"gateway-selected-capture.json");
+   case "gateway_shared_open" -> execute(() -> {Intent open=new NativeGatewayLab(this).selectedOpen();runOnUiThread(() -> startActivity(open));return new JSONObject().put("requested",true).put("disposableFixtureOnly",true);},"gateway-shared-open.json");
+   case "gateway_shared_pull" -> execute(() -> new NativeGatewayLab(this).syncShared(true),"gateway-shared-pull.json");
+   case "gateway_shared_export" -> execute(() -> new NativeGatewayLab(this).exportShared(),"gateway-shared-export.json");
+   case "gateway_shared_sync" -> execute(() -> new NativeGatewayLab(this).syncShared(),"gateway-shared-sync.json");
+   case "gateway_shared_capture" -> execute(() -> new NativeGatewayLab(this).sharedCapture(),"gateway-shared-capture.json");
+   case "gateway_shared_rename" -> execute(() -> new NativeGatewayLab(this).renameShared(),"gateway-shared-rename.json");
+   case "gateway_preservation" -> execute(() -> new NativeGatewayLab(this).preservation(),"gateway-preservation.json");
+   case "account_baseline" -> execute(() -> new NativeAccountLab(this).baseline(),"account-baseline-result.json");
+   case "account_lab_info" -> execute(() -> new NativeAccountLab(this).probeLabAccountInfo(),"account-lab-info.json");
+   case "account_restore" -> execute(() -> new NativeAccountLab(this).restoreOriginal(),"account-restore.json");
+   case "gateway_create" -> execute(() -> new NativeGatewayLab(this).create(),"gateway-create.json");
+   case "gateway_capture" -> execute(() -> new NativeGatewayLab(this).capture(),"gateway-capture.json");
+   case "gateway_enable" -> execute(() -> new NativeGatewayLab(this).enable(),"gateway-enable.json");
+   case "gateway_disable" -> execute(() -> new NativeGatewayLab(this).disable(),"gateway-disable.json");
+   case "gateway_rename" -> execute(() -> new NativeGatewayLab(this).rename(),"gateway-rename.json");
+   case "account_login_lab" -> execute(() -> new NativeAccountLab(this).login(),"account-login.json");
    case "cluster_snapshot" -> execute(() -> new NativeClusterLab(this).snapshot(),"cluster-snapshot.json");
    case "cluster_baseline" -> execute(() -> new NativeClusterLab(this).baseline(),"cluster-baseline-result.json");
    case "cluster_update" -> execute(() -> new NativeClusterLab(this).update(),"cluster-update.json");
@@ -47,6 +154,12 @@ public final class MainActivity extends Activity {
    case "disable_ink" -> execute(() -> new FixtureRunner(this,"inkFixture").disableNativeCloud(),"ink-cloud.json");
    case "write_fixture" -> execute(() -> new FixtureRunner(this).writeTextResource(),"fixture-write.json");
    case "image_ink" -> worker.execute(() -> {try{Intent open=new FixtureRunner(this,"inkFixture").insertImage();runOnUiThread(() -> startActivity(open));}catch(Exception e){show(e.toString());}});
+   case "create_rich" -> worker.execute(() -> {try{Intent open=new FixtureRunner(this,"richFixture").createInkIntent();runOnUiThread(() -> startActivity(open));}catch(Exception e){show(e.toString());}});
+   case "capture_rich" -> execute(() -> new FixtureRunner(this,"richFixture").capture(),"rich-metadata.json");
+   case "export_rich" -> execute(() -> new FixtureRunner(this,"richFixture").export(),"rich-export.json");
+   case "stage_rich" -> execute(() -> new FixtureRunner(this,"richFixture").stageInkPayload(),"rich-stage.json");
+   case "image_rich" -> worker.execute(() -> {try{Intent open=new FixtureRunner(this,"richFixture").insertImage();runOnUiThread(() -> startActivity(open));}catch(Exception e){show(e.toString());}});
+   case "open_rich" -> worker.execute(() -> {try{Intent open=new FixtureRunner(this,"richFixture").open();runOnUiThread(() -> startActivity(open));}catch(Exception e){show(e.toString());}});
    case "create_ink" -> worker.execute(() -> {try{Intent open=new FixtureRunner(this,"inkFixture").createInkIntent();runOnUiThread(() -> startActivity(open));}catch(Exception e){show(e.toString());}});
    case "capture_ink" -> execute(() -> new FixtureRunner(this,"inkFixture").capture(),"ink-metadata.json");
    case "export_ink" -> execute(() -> new FixtureRunner(this,"inkFixture").export(),"ink-export.json");
@@ -58,7 +171,7 @@ public final class MainActivity extends Activity {
  }
  interface Task { JSONObject run() throws Exception; }
  private void add(LinearLayout layout,String label,Task task,String report) { Button button=new Button(this);button.setText(label);button.setOnClickListener(v -> execute(task,report));layout.addView(button); }
- private void execute(Task task,String report) { show("Running…");worker.execute(() -> {try {JSONObject result=task.run();ReportFiles.write(this,report,result);show(result.toString(2));}catch(Exception e){try{JSONObject failure=new JSONObject().put("error",e.toString());ReportFiles.write(this,report,failure);}catch(Exception ignored){}show(e.toString());}}); }
+ private void execute(Task task,String report) { show("Running…");worker.execute(() -> {try {JSONObject result=task.run();ReportFiles.write(this,report,result);show(result.optBoolean("requested")&&result.has("completed")&&!result.optBoolean("completed")?"Request sent to BOOX sync. This command returns before syncing finishes. Completion is checked separately in device reports and server traffic.":result.toString(2));}catch(Exception e){try{JSONObject failure=new JSONObject().put("error",e.toString());ReportFiles.write(this,report,failure);}catch(Exception ignored){}show(e.toString());}}); }
  private void show(String text) {runOnUiThread(() -> {if(!isFinishing())output.setText(text);});}
  protected void onDestroy() {worker.shutdown();super.onDestroy();}
 }

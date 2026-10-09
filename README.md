@@ -3,7 +3,30 @@
 Dedicated BOOX native-note adapter and, eventually, Rhizome sync companion for
 Alexandria Server. PowerSync is a separate source dataset from the Alexandria client.
 
-Current implementation is a diagnostic Android app, not a two-way sync release.
+The signed product app is `:client` (`dev.aragonite.powersync.client`). It enrolls
+with an Alexandria native BOOX server, configures stock ksync and restores its
+previous configuration offline. Qualified firmware is API 35 with Palma2_Pro_C
+ksync 32173 or Go103_2Lumi ksync 32079. It installs beside the diagnostic probe.
+
+Build: `JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ./gradlew :client:assembleRelease`.
+Release signing requires the persistent private configuration at
+`~/.local/share/aragonite-powersync/signing/client.properties`; keep that key for
+future upgrades. Install in place with
+`adb -s SERIAL install -r client/build/outputs/apk/release/client-release.apk`.
+Grant native configuration file access, enroll using the server's single-use
+code, review sync choices, then Connect. Return works without the custom server.
+Never uninstall or clear data to work around a signature mismatch.
+
+See [product results and limits](docs/product-implementation-results.md),
+[application design](docs/powersync-app-design.md) and
+[Alexandria server setup](../AragoniteAlexandriaServer/docs/boox-native-setup.md).
+Product setup tests keep custom-server sync off; they are separate from previous
+native content-transfer experiments. Rendering, general content authoring and
+whole-library import are unfinished.
+
+## Diagnostic probe
+
+The existing `:app` remains a diagnostic Android app, not a two-way sync release.
 It probes Notes/ksync Binder access, metadata providers, page callbacks and storage
 from an ordinary application UID. Fixture actions operate only on the disposable text and ink notebooks journaled
 by this installation. Native export, text-resource writes, and single-stroke

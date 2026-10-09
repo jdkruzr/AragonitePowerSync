@@ -1,0 +1,29 @@
+# Fresh-revision repair of native reader status divergence
+
+2026-10-08. A controlled server-authored restoration repaired the prior same-ID split on Palma and Lumi. This is an explicit reconciliation operation, not evidence that native concurrent edits converge automatically.
+
+The selected state follows the restoration already selected by the native mode-7 resolver. We copied the original 676-byte native restoration ZIP's protobuf, replaced only its information-revision UUID, and repackaged it under a fresh native page/revision/time filename. Shape ID, original shape updatedAt, active status, geometry, and pressure revision were retained exactly. All original conflicting assets remain available. The repair information revision is 365e6c2a-46c0-47d0-890e-eccd858dccbf; attachment SHA256 is e5fc6555a03d0465484049dcc19727893300c5e4f22215317fc60c40b869ef5f.
+
+The host published the new fixture asset, a new revision of the reader commit record with identical body, then a native-shaped MESSAGE with fresh syncAt. Both devices downloaded the exact ZIP before explicit pull. Ordinary pulls reported success/newData=false and left the old split unchanged. Subsequent scoped full pulls applied the new information revision on both devices: seven records, three active/four disabled, L active under the identical new revision, five baseline-exact pressure files. Final ordinary replay retained that state.
+
+Mode-7 configuration was not changed for this first repair. Thus downloaded resource plus fresh information revision is sufficient for the tested full-import path, but not the tested ordinary path. The reason ordinary import was ineligible remains a separate test; this result does not prove a universal full-pull requirement.
+
+Both notebook guards pass, unrelated reader rows show no further drift against the prior closure, and the full-pull flag is false afterward. The earlier unrelated Lumi fileSyncStatus exception remains documented. Neither account renewal nor host cache injection/PB-ledger reset was used. Devices are at Home with lab endpoints live.
+
+Alexandria can retain competing intents and emit a journaled fresh revision for a selected state, but must verify provider application independently from transport. This fixture-only demonstration does not implement a production resolver, choose policy for arbitrary conflicts, or qualify automatic application. A subsequent ordinary-import eligibility test will add a fresh mode-7 commit while keeping the restoration payload unchanged.
+
+Private evidence is in artifacts/gateway-lab/qualification/reader-native-status-reconciliation/: publication plan and result, exact ZIP, unchanged-body commit/MESSAGE controls, native before/ordinary/full/replay exports, import logs, preserved-reader guards, server snapshots, and SHA256SUMS. The temporary capture driver was interrupted before publication to correct a shared-parser output-directory binding; the successful rerun is the sole published repair. An inherited closure console label says "split persists"; closure.json and the native exports correctly show both L statuses zero.
+
+## Ordinary-import activation, qualified separately
+
+The clean pair in reader-native-reconciliation-clean-gate holds sessions constant: both devices cache a fresh information revision and ordinary import skips it. After mode-7 commitId/updatedAt change plus fresh reader-commit revision/MESSAGE, both ordinary imports apply it. No full import was used. Because those two mode-7 fields changed together, this pair does not establish either as individually necessary.
+
+A second clean pair in reader-native-reconciliation-identical-mode7 goes further. Both cache another fresh restoration revision and ordinary pulls retain the prior information revision. The host then republishes **the identical mode-7 body**, preserving commitId, updatedAt, commitInfo, and every other property, as a new Couchbase revision. An identical-body reader commit revision and MESSAGE follow. Ordinary imports apply the fresh information revision on both devices while CBL configuration values stay unchanged. This qualifies the complete tested bundle; it does not isolate whether reader commit/MESSAGE are each necessary.
+
+The final information revision is f8995c68-1206-4ab4-87c1-39f19b3c46fd, active on both devices. Shape updatedAt is still the original restoration timestamp, not a fresh server timestamp. All seven IDs and all five pressure files remain exact; final replay and preservation guards pass without additional unrelated drift. No full import, session renewal, cache injection or ledger reset was used in either clean pair.
+
+Static support: ksync ReaderLibraryReplicator.onSyncChangeFinished handles received document IDs; HandlePullLibraryDataAction invokes SavePullUserDataRecordRequest. That request saves a type-11 ReaderRecordModel for each received reader-user-data document. LoadUserDataRecordRequest loads the queued records; the ordinary merge invokes ReaderShapePBDocumentImporter. Asset download alone is not this record queue. This supports the observed unchanged-body revision activation without assigning causality to wall-clock advancement.
+
+The session-interrupted trial is retained separately in reader-native-reconciliation-ordinary-gate and is not used as clean gating evidence. Session expiry, native filter rejection, a transient system-flag representation correction, renewed sessions, and unchanged-body revision recovery are journaled there.
+
+For Alexandria's explicit repair path: retain alternatives, publish a fresh selected-state information revision with stable shape/pressure identity, publish a new mode-7 revision, then the tested reader-commit/MESSAGE sequence. Track receipt, cached resource, and native provider application separately; validate both devices and replay. This is a lab-qualified mechanism, not a deployed production policy or a general proof for every firmware/content type.

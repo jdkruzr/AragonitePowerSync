@@ -4,6 +4,7 @@
 Never retains request bodies, query values, or authorization values. Unknown
 routes fail closed; no note replication or object upload is accepted.
 """
+import ipaddress
 import argparse
 import hashlib
 import json
@@ -16,9 +17,16 @@ from urllib.parse import urlsplit, parse_qs
 
 LAB_ID = 'powersync_lab'
 
-def cluster_definition(port, blip_port=None):
-    http = f'http://127.0.0.1:{port}'
-    ws = f'ws://127.0.0.1:{blip_port or port}/neocloud'
+def lab_host(host):
+    address = ipaddress.IPv4Address(host)
+    if address.is_unspecified or address.is_multicast or not (address.is_loopback or address.is_private):
+        raise ValueError('Lab listener requires a concrete private or loopback IPv4 address')
+    return str(address)
+
+def cluster_definition(port, blip_port=None, advertised_host='127.0.0.1'):
+    advertised_host = lab_host(advertised_host)
+    http = f'http://{advertised_host}:{port}'
+    ws = f'ws://{advertised_host}:{blip_port or port}/neocloud'
     host = {key: http for key in (
         'onyxHostBaseUrl', 'onyxCloudDataHostBaseUrl', 'onyxLogHostBaseUrl',
         'onyxContentHostBaseUrl', 'onyxSend2BooxHostBaseUrl', 'shopBookUrl',

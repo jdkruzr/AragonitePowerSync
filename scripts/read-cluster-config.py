@@ -31,8 +31,8 @@ def main():
     parser.add_argument('--restore-from', type=Path,
                         help='restore exactly a saved cluster configuration after native switch-back')
     args = parser.parse_args()
-    if args.serial != 'bbb70bef':
-        parser.error('this captured ABI is qualified only on Palma serial bbb70bef')
+    if args.serial not in ('bbb70bef', 'dfef8c1'):
+        parser.error('captured ABI is qualified only on the Palma and Lumi lab devices')
     if args.transaction != 3:
         parser.error('getSystemConfig transaction must be the verified read-only code 3')
     reply = subprocess.check_output(['adb', '-s', args.serial, 'shell', 'service', 'call',

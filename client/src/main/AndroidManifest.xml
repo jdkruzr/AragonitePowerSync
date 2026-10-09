@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+ <uses-permission android:name="android.permission.INTERNET" />
+ <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+ <queries><package android:name="com.onyx.android.ksync"/><package android:name="com.onyx.android.note"/><package android:name="com.onyx"/><provider android:authorities="com.onyx.account.database.ContentProvider.KSyncAccountContentProvider;com.onyx.android.sdk.note.ContentProvider;com.onyx.content.database.ContentProvider"/></queries>
+ <application android:label="PowerSync" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false" android:usesCleartextTraffic="false" android:theme="@style/PowerSyncTheme">
+  <activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity>
+ </application>
+</manifest>

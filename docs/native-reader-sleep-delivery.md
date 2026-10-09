@@ -1,0 +1,19 @@
+# Reader delivery during BOOX sleep/display doze
+
+2026-10-08. Owned clean-v2 PDF; 19 native shape records and 13 pressure files on each device before T. Evidence: `artifacts/gateway-lab/qualification/reader-native-screen-off-delivery/`.
+
+Both lab sessions were renewed before the physical edit; native login reset persisted Reader sync false on both devices, with Notes still false. Journaled Reader-only reassertion, native config-change notification and scoped per-book start restore readiness. Exact 19-shape/13-pressure exports and unrelated-library guards pass after renewal. This preflight is distinct from delivery and sealed separately.
+
+Receiver Reader was opened before sleep. BOOX power reports mWakefulness=Dozing and display mScreenState=DOZE. USB/ADB remain connected. This is the observed BOOX sleep/display-doze state, not proof of full Asleep, deep device idle, detached USB or battery-only operation.
+
+Palma user drew T above S and left the owned PDF open. Pen toolbar was visibly already closed; one Back triggers native close/save. No injected fault, helper call, SDK pull, login renewal, host publication, source reopen or receiver wake is used during the 120-second window. Ten-second power/display samples and native/server logs accompany it. Wake/unlock and exact application verification are separate later phases.
+
+Initial observations: two successful native asset PUTs and six server document revisions change. Receiver asset requests have not appeared in the early sleep samples. Final sleep outcome and wake qualification are appended once observed; no ink-application claim is made from metadata receipt alone.
+
+Completed sleep phase: two successful source asset PUTs, zero failed PUTs, zero receiver asset GETs during 120 seconds. All twelve power/display samples remain Dozing/DOZE. Source local native handoff and server publication occur; receipt/application on the receiver is not inferred. Sleep-only evidence is separately sealed under sleep-evidence/. Receiver wake requested afterward; user unlock and 60-second unaided Reader observation remain pending.
+
+Wake/unlock result: unaided catch-up occurs, with no native SDK pull, explicit PDF reopen, host publication or manual Sync. Both missing assets receive successful GETs after wake. First GET starts about 2.60 seconds after wake; the keyguard is still observed showing about 5.72 seconds after wake, proving resource transfer can resume while locked. Native import succeeds about 8.06 seconds after wake, between the last locked and first unlocked samples (5.72 and 10.88 seconds after wake). Therefore wake versus unlock causality for ink application is not independently isolated. The pre-helper screenshot shows T. Exact native and library checks follow separately.
+
+Facade implication: treat BOOX sleep/display doze as a potential pause in native transport and allow backlog to resume on wake. This bounded case requires no server doorbell repair after wake. Successful server publication while the peer sleeps does not imply peer cache receipt or ink application. Full deep idle, Wi-Fi versus sleep policy attribution, and USB-detached operation remain open.
+
+Final native verification passes on both devices: 21 shape IDs and 14 pressure files. The two new T records match semantically across devices; every earlier record matches its own baseline except local UPDATEDAT/OBJECTID, and all 14 pressure payloads match across devices. Original notebook and unrelated Reader guards pass, excluding only the previously confirmed Palma user-added notebook. Read-only inspection guards admit only exact source and receiver annotated PDF hashes; write guards are unchanged. Build/lint and signature-matched in-place installs pass after native observation. Full case evidence and drivers are sealed with SHA256SUMS.

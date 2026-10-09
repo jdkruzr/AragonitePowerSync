@@ -17,9 +17,7 @@ final class NativeClusterLab {
  private final Context context;
  NativeClusterLab(Context context) {this.context=context;}
  private JSONObject cluster() throws Exception {
-  File observation=new File(context.getFilesDir(),"cluster-config-observed.json");
-  if(!observation.isFile() || observation.length()>1048576) throw new IOException("Stage bounded host-observed cluster configuration first");
-  return new JSONObject(new String(java.nio.file.Files.readAllBytes(observation.toPath()),StandardCharsets.UTF_8));
+  return new NativeSystemConfigProbe().read();
  }
  private JSONObject library() throws Exception {
   List<String> identities=new ArrayList<>();int documents=0;
@@ -34,7 +32,7 @@ final class NativeClusterLab {
  JSONObject snapshot() throws Exception {
   JSONObject config=cluster();
   return new JSONObject().put("clusterId",config.getString("curClusterId"))
-   .put("configurationSource","host ADB system-service observation; refresh after mutations")
+   .put("configurationSource","live ordinary-app system-service read")
    .put("availableClusterIds",config.getJSONObject("clusterMap").names()).put("library",library());
  }
  JSONObject baseline() throws Exception {
@@ -53,8 +51,13 @@ final class NativeClusterLab {
   String target=restore ? before.getString("clusterId") : LAB_ID;
   JSONObject config=cluster();
   if(!config.getJSONObject("clusterMap").has(target)) throw new IOException("Target missing from native cluster list");
-  if(!restore && !before.getJSONObject("library").getString("identityStatusSha256").equals(library().getString("identityStatusSha256")))
-   throw new IOException("Library identities changed since baseline; inspect before switch");
+  if(!restore && !before.getJSONObject("library").getString("identityStatusSha256").equals(library().getString("identityStatusSha256"))){
+   // A previous isolated round trip added an explicitly allowlisted lab notebook.
+   // Require the existing ownership/status baseline for every other row.
+   if(!new File(context.getFilesDir(),"gateway-preservation-baseline.json").isFile()
+      || !new NativeGatewayLab(context).preservation().getBoolean("otherRowsPreserved"))
+    throw new IOException("Library identities changed outside preserved lab fixtures; inspect before switch");
+  }
   ReportFiles.write(context,"cluster-transition.json",new JSONObject().put("target",target).put("phase","requested"));
   JSONObject result=call(80,target).put("library",library()).put("requestedTarget",target)
    .put("configurationObservationRequiresRefresh",true);
