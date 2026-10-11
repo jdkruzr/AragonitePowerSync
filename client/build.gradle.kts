@@ -5,10 +5,10 @@ val signingProps = Properties().apply { if(signingFile.exists()) signingFile.inp
 android {
  namespace = "dev.aragonite.powersync.client"
  compileSdk = 35
- defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 35; targetSdk = 35; versionCode = 4; versionName = "0.1.3" }
+ defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 35; targetSdk = 35; versionCode = 5; versionName = "0.1.4" }
  buildFeatures { buildConfig = true }
  signingConfigs { if(signingFile.exists()) create("persistent") { storeFile = File(signingProps.getProperty("storeFile")); storePassword = signingProps.getProperty("storePassword"); keyAlias = signingProps.getProperty("keyAlias"); keyPassword = signingProps.getProperty("keyPassword") } }
  buildTypes { getByName("release") { if(signingFile.exists()) signingConfig = signingConfigs.getByName("persistent") } }
  compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
 }
-dependencies { testImplementation("junit:junit:4.13.2") }
+dependencies { testImplementation("junit:junit:4.13.2"); testImplementation("org.json:json:20240303") }
