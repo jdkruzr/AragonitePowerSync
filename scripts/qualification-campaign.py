@@ -29,6 +29,9 @@ def observe(root):
             for field in ('level', 'temperature'):
                 match = re.search(r'^\s*' + field + r': (\d+)', battery, re.M)
                 d[field] = int(match.group(1)) if match else None
+            power = command(['adb', '-s', serial, 'shell', 'dumpsys', 'power'])
+            wake = re.search(r'mWakefulness=(\w+)', power)
+            d['wakefulness'] = wake.group(1) if wake else 'unknown'
             raw = command(['adb', '-s', serial, 'shell', 'content', 'query', '--uri', 'content://com.onyx.android.sdk.note.ContentProvider/NoteModel', '--projection', 'uniqueId:userId:type:status:noteSyncStatus'])
             if 'Exception' in raw or not (raw.startswith('Row:') or 'No result found' in raw):
                 raise RuntimeError('unrecognized provider response')
@@ -53,7 +56,7 @@ def main():
     p.add_argument('--state',type=Path,required=True)
     sub=p.add_subparsers(dest='action',required=True)
     sub.add_parser('snapshot')
-    m=sub.add_parser('monitor');m.add_argument('--minutes',type=int,default=120)
+    m=sub.add_parser('monitor');m.add_argument('--minutes',type=int,default=120);m.add_argument('--interval-seconds',type=int,default=60)
     r=sub.add_parser('receipt');r.add_argument('case',choices=CASES);r.add_argument('status',choices=('passed','failed','blocked','deferred','in_progress'));r.add_argument('--evidence',required=True);r.add_argument('--summary',required=True)
     args=p.parse_args();os.umask(0o077);args.state.mkdir(parents=True,exist_ok=True,mode=0o700)
     if args.action=='receipt':
@@ -61,9 +64,15 @@ def main():
         with dest.open('a') as f:f.write(json.dumps({'at':now(),'case':args.case,'status':args.status,'evidence':args.evidence,'summary':args.summary})+'\n')
     elif args.action=='snapshot':observe(args.state)
     else:
-        if not 1<=args.minutes<=120:p.error('monitor duration must be 1..120 minutes')
+        if not 1<=args.minutes<=2880:p.error('monitor duration must be 1..2880 minutes')
+        if not 30<=args.interval_seconds<=900:p.error('monitor interval must be 30..900 seconds')
+        summary={'startedAt':now(),'minutes':args.minutes,'intervalSeconds':args.interval_seconds,'state':'running','samples':0}
+        status=args.state/'monitor-status.json'
+        status.write_text(json.dumps(summary))
         end=time.monotonic()+args.minutes*60
         while time.monotonic()<end:
             start=time.monotonic();observe(args.state)
-            time.sleep(max(0,min(60-(time.monotonic()-start),end-time.monotonic())))
+            summary['samples']+=1;summary['lastSampleAt']=now();status.write_text(json.dumps(summary))
+            time.sleep(max(0,min(args.interval_seconds-(time.monotonic()-start),end-time.monotonic())))
+        summary['state']='completed';summary['finishedAt']=now();status.write_text(json.dumps(summary))
 if __name__=='__main__':main()

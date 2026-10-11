@@ -16,4 +16,35 @@ final class TransitionController {
   if(installedMarker!=null){if(before.isNull("marker")){new AtomicFile(marker()).delete();if(marker().exists())throw new IOException("Cannot remove PowerSync marker");}else writeMarker(Base64.decode(before.getString("marker"),Base64.DEFAULT));}
   nativeIO.repairMissingCatalog(before.getJSONArray("catalog"));boolean accountRestored=before.has("accountCache")?new NativeAccountBackup(nativeIO).restore(before.getJSONObject("account"),before.getJSONArray("accountCache"),journal.getString("nativeUid"),custom):nativeIO.restoreAccount(before.getJSONObject("account"),journal.getString("nativeUid"));JSONObject refreshed=nativeIO.read(NativeBridge.CLUSTER);refreshed.getJSONObject("clusterMap").remove(custom);if(refreshed.has("clusterMapSize"))refreshed.put("clusterMapSize",refreshed.getJSONObject("clusterMap").length());nativeIO.write(NativeBridge.CLUSTER,refreshed);nativeIO.repairMissingCatalog(before.getJSONArray("catalog"));nativeIO.flags(accountRestored?before.getJSONObject("flags"):new JSONObject().put("notes","false").put("reader","false"));phase(journal,accountRestored?"restored":"needs_signin");}
  JSONObject recoveryStatus()throws Exception {JSONObject p=state.read("profile");if(p==null)throw new IOException("Enroll a server first");return ServerClient.request(p.getString("serverURL")+"/api/v1/boox/device/status","GET",null,p.getString("companionToken"));}
+ private JSONObject audioProfile()throws Exception {
+  storage();nativeIO.compatible();JSONObject p=state.read("profile"),j=state.read("transition");
+  if(p==null||j==null||!"active".equals(j.optString("phase")))throw new IOException("Connect to your enrolled server before recovering audio");
+  JSONObject a=nativeIO.account();
+  if(!a.optBoolean("loggedIn")||!p.getString("nativeUid").equals(a.optString("uid"))||!p.getJSONObject("cluster").getString("clusterId").equals(nativeIO.read(NativeBridge.CLUSTER).getString("curClusterId")))throw new IOException("Native account or selected server changed");
+  return p;
+ }
+ JSONArray audioRecoveries()throws Exception {
+  JSONObject p=audioProfile();JSONArray all=new JSONArray();String after="";
+  do {JSONObject reply=ServerClient.request(p.getString("serverURL")+"/api/v1/boox/device/audio-recovery?after="+after,"GET",null,p.getString("companionToken"));
+   if(!p.getString("nativeUid").equals(reply.getString("nativeUid")))throw new IOException("Audio library identity differs");
+   JSONArray items=reply.getJSONArray("items");for(int i=0;i<items.length();i++)all.put(items.getJSONObject(i));
+   String next=reply.getString("next");if(!next.isEmpty()){java.util.UUID.fromString(next);if(next.compareTo(after)<=0)throw new IOException("Invalid audio recovery cursor");}after=next;
+   if(all.length()>1000)throw new IOException("Too many audio repairs; review this library on the server");
+  }while(!after.isEmpty());return all;
+ }
+ AudioCacheRepair audioPacket(String id)throws Exception {
+  java.util.UUID.fromString(id);JSONObject p=audioProfile();
+  AudioCacheRepair repair=new AudioCacheRepair(ServerClient.request(p.getString("serverURL")+"/api/v1/boox/device/audio-recovery?operation="+id,"GET",null,p.getString("companionToken"),24*1024*1024),p.getString("nativeUid"));
+  try(android.database.Cursor c=context.getContentResolver().query(android.net.Uri.parse("content://com.onyx.android.sdk.note.ContentProvider/NoteModel"),new String[]{"uniqueId"},"uniqueId=? AND userId=? AND type=1 AND status=1",new String[]{repair.document,repair.uid},null)){
+   if(c==null||c.getCount()!=1)throw new IOException("The active notebook is not available in this device’s library");
+  }
+  return repair;
+ }
+ String inspectAudio(AudioCacheRepair repair)throws Exception {return repair.inspect(Environment.getExternalStorageDirectory().toPath());}
+ void repairAudio(AudioCacheRepair selected)throws Exception {
+  AudioCacheRepair current=audioPacket(selected.operation);
+  if(!current.sha.equals(selected.sha)||!current.damagedSHA.equals(selected.damagedSHA))throw new IOException("Server repair changed; review it again");
+  current.apply(Environment.getExternalStorageDirectory().toPath(),new File(context.getFilesDir(),"audio-recovery-backups").toPath());
+ }
+
 }
