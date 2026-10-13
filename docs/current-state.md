@@ -1,5 +1,14 @@
 # PowerSync implementation state
 
+2026-10-13: Shared Aragonite crystal icon refresh is staged for the next release.
+The new transparent composition and all five legacy launcher sizes are packaged;
+adaptive/themed icons use the existing inset. Source artwork, crystal reference,
+prompt and export script are retained in [icon documentation](../design/icons/README.md).
+JDK 17 release assembly and lint pass (0 errors, 20 existing warnings); APK artwork
+transparency and rendering on white/black match the source, and the existing signing
+certificate is verified. Version remains 0.1.5 (code 6). No device installation
+was performed, as requested.
+
 2026-10-11: PowerSync 0.1.5 adds explicit exact-hash MP3 cache recovery with private backups, paired with Alexandria’s owner audio preview/publication UI. Signed in-place upgrades preserve both device libraries/settings; ordinary app recovery restores the disposable recording exactly on both devices. Personal audio untouched; PCM and listened-to playback remain separate. Required affected server tests and Android release checks pass. A 48-hour read-only observer and verified independent-backup copy are running as user services; neither is marked passed yet. See the [qualification follow-up](qualification-campaign-20261010.md#companion-audio-recovery--2026-10-11-follow-up).
 
 2026-10-11: Qualification round closed with documented limits. Two-hour observer completed: 121 samples; two readiness failures coincide with planned cold backups; no device-observation errors or unexplained catalog transitions; batteries 24.4–27.1°C. Both tablets remain on production and pass explicit native Library sync after the final restart. All temporary faults, timers, tunnel and restored stacks are stopped. Latest clean-stop backup restores all 51,982 native immutable objects exactly. Required tests pass; all 15 changed Go runtime files match deployment. See the PowerSync qualification campaign for evidence and deferred cases.

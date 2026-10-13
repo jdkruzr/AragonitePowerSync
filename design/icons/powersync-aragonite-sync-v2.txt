@@ -1,0 +1,14 @@
+Generated with the built-in image-generation tool on 2026-10-13.
+Primary reference: aragonite-crystal-master-v1.png, copied unchanged from
+/home/jtd/AragonitePowerSearch/design/aragonite/aragonite-crystal-master-v1.png.
+Arrow/layout reference: powersync-aragonite-sync-concept-v1.png.
+This generative composition closely follows the master; it is not pixel-exact layering.
+
+Prompt:
+Use case: compositing.
+Asset type: production PowerSync Android launcher icon, updated from the shared Aragonite crystal master.
+Input image 1: the approved standalone crystal master, primary subject to preserve.
+Input image 2: the previous PowerSync icon, reference for sync arrows and layout ONLY.
+Compose the crystal from image 1, scaled uniformly to fit, inside the two muted teal chasing arrows from image 2. Preserve image 1's crystal silhouette, point arrangement, facets, ivory and amber colors, thick charcoal outline and exact proportions as closely as possible. Do not substitute the older crystal from image 2.
+Match image 2's overall arrangement: two broad clockwise curved teal arrows with charcoal outlines form an almost complete circular ring, with clear generous separation from the crystal. Center the crystal visually inside the ring. Strong legibility at launcher sizes and in grayscale.
+Square canvas, full ring and crystal entirely visible, comfortable 9 percent outer safe margin. Actual transparent background and transparent gaps, no colored backdrop, no checkerboard, no floor, shadow, text, letters, extra symbols or watermark. Deliver one polished icon.
