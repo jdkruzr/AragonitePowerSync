@@ -1,5 +1,7 @@
 # PowerSync implementation state
 
+2026-10-15: PowerSync 0.1.6 (code 7) lets three cluster fields stay on stock Onyx (US): `onyxCloudDataHostBaseUrl` = `https://en-data.boox.com` (firmware updates; mode 3, confirmed with CFR), `onyxLogHostBaseUrl` = `https://en-lon.boox.com` (unused) and `shopBookUrl` = `https://push.boox.com`. `EndpointProfile.validate` accepts exactly those values for exactly those fields; every other field must still be same-origin with the enrolled server (decompile shows they carry the account token, and a 401 on a token call can log the device out). Alexandria generates the split profile and serves a scriptless Template Hub explanation page as the material host. Client tests (21), release build and lint (0 errors, 20 existing warnings) pass; signing certificate matches; installed in place on Lumi and Palma. **Not yet applied on either tablet**: their live cluster entries still use the old all-Alexandria hosts until re-applied. Evidence and live request log: Alexandria `docs/boox-cloud-services-20261015.md`.
+
 2026-10-13: Shared Aragonite crystal icon refresh is staged for the next release.
 The new transparent composition and all five legacy launcher sizes are packaged;
 adaptive/themed icons use the existing inset. Source artwork, crystal reference,
