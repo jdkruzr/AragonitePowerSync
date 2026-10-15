@@ -15,6 +15,53 @@ final class TransitionController {
   phase(journal,"restore_requested");nativeIO.flags(new JSONObject().put("notes","false").put("reader","false"));if(!live.getJSONObject("clusterMap").has(original)){live.getJSONObject("clusterMap").put(original,before.getJSONObject("cluster").getJSONObject("clusterMap").get(original));nativeIO.write(NativeBridge.CLUSTER,live);}if(!original.equals(selected))nativeIO.switchCluster(original);JSONObject map=nativeIO.read(NativeBridge.CLUSTER);map.getJSONObject("clusterMap").remove(custom);map.put("curClusterId",original);if(map.has("clusterMapSize"))map.put("clusterMapSize",map.getJSONObject("clusterMap").length());nativeIO.write(NativeBridge.CLUSTER,map);
   if(installedMarker!=null){if(before.isNull("marker")){new AtomicFile(marker()).delete();if(marker().exists())throw new IOException("Cannot remove PowerSync marker");}else writeMarker(Base64.decode(before.getString("marker"),Base64.DEFAULT));}
   nativeIO.repairMissingCatalog(before.getJSONArray("catalog"));boolean accountRestored=before.has("accountCache")?new NativeAccountBackup(nativeIO).restore(before.getJSONObject("account"),before.getJSONArray("accountCache"),journal.getString("nativeUid"),custom):nativeIO.restoreAccount(before.getJSONObject("account"),journal.getString("nativeUid"));JSONObject refreshed=nativeIO.read(NativeBridge.CLUSTER);refreshed.getJSONObject("clusterMap").remove(custom);if(refreshed.has("clusterMapSize"))refreshed.put("clusterMapSize",refreshed.getJSONObject("clusterMap").length());nativeIO.write(NativeBridge.CLUSTER,refreshed);nativeIO.repairMissingCatalog(before.getJSONArray("catalog"));nativeIO.flags(accountRestored?before.getJSONObject("flags"):new JSONObject().put("notes","false").put("reader","false"));phase(journal,accountRestored?"restored":"needs_signin");}
+ // Endpoint updates change only the endpoint values of the connected custom cluster: no
+ // switch, no sign-in, same cluster identity. Fails closed and rolls back on any mismatch.
+ JSONObject endpointPlan()throws Exception {
+  storage();nativeIO.compatible();JSONObject p=state.read("profile"),j=state.read("transition");
+  if(p==null||j==null||!"active".equals(j.optString("phase")))throw new IOException("Connect to your enrolled server before updating its endpoints");
+  JSONObject pending=state.read("endpoint-update");if(pending!=null&&!java.util.Set.of("applied","rolled_back").contains(pending.optString("phase")))throw new IOException("A previous endpoint update was interrupted; inspect before updating again");
+  String id=p.getJSONObject("cluster").getString("clusterId");JSONObject live=nativeIO.read(NativeBridge.CLUSTER);
+  if(!id.equals(live.getString("curClusterId")))throw new IOException("Another server is selected; inspect before updating");
+  JSONObject a=nativeIO.account();if(!a.optBoolean("loggedIn")||!p.getString("nativeUid").equals(a.optString("uid")))throw new IOException("Native account differs from your enrolled library");
+  JSONObject entry=live.getJSONObject("clusterMap").optJSONObject(id),installed=state.read("installed-cluster");
+  if(entry==null||installed==null||!NativeBridge.canonical(entry).equals(NativeBridge.canonical(installed)))throw new IOException("Custom endpoint changed outside PowerSync; inspect before updating");
+  JSONObject reply=ServerClient.request(p.getString("serverURL")+"/api/v1/boox/device/endpoints","GET",null,p.getString("companionToken"));
+  if(!p.getString("libraryId").equals(reply.getString("libraryId"))||!p.getString("nativeUid").equals(reply.getString("nativeUid")))throw new IOException("Server library identity differs");
+  JSONObject next=reply.getJSONObject("cluster");if(!id.equals(next.getString("clusterId"))||!id.equals(next.getString("lang")))throw new IOException("Server changed the cluster identity; enroll again instead");
+  JSONObject candidate=EndpointProfile.validate(p.getString("serverURL"),new JSONObject(p.toString()).put("cluster",next));
+  JSONArray changes=new JSONArray();JSONObject updated=EndpointProfile.updatedEntry(entry,next,changes);
+  return new JSONObject().put("clusterId",id).put("changes",changes).put("entry",entry).put("updated",updated).put("profile",candidate);
+ }
+ String applyEndpointUpdate()throws Exception {
+  JSONObject plan=endpointPlan();if(plan.getJSONArray("changes").length()==0)return "Endpoints already match the server. Nothing changed.";
+  String id=plan.getString("clusterId");JSONObject profile=plan.getJSONObject("profile"),updated=plan.getJSONObject("updated");
+  byte[] markerBytes=marker().isFile()?Files.readAllBytes(marker().toPath()):null;if(markerBytes==null||markerBytes.length>1048576)throw new IOException("Native server marker is missing or too large; inspect before updating");
+  JSONObject installedMarker=state.read("installed-marker");if(installedMarker==null||!installedMarker.getString("sha256").equals(NativeBridge.hex(java.security.MessageDigest.getInstance("SHA-256").digest(markerBytes))))throw new IOException("Native marker changed outside PowerSync; inspect before updating");
+  byte[] nextMarker=EndpointProfile.replaceMarker(markerBytes,profile);
+  JSONObject flags=nativeIO.flags();JSONObject journal=new JSONObject().put("phase","prepared").put("clusterId",id).put("changes",plan.getJSONArray("changes")).put("previousEntry",plan.getJSONObject("entry")).put("previousMarker",Base64.encodeToString(markerBytes,Base64.NO_WRAP)).put("flags",flags);state.write("endpoint-update",journal);
+  try{
+   endpointPhase(journal,"pause_requested");nativeIO.flags(new JSONObject().put("notes","false").put("reader","false"));
+   endpointPhase(journal,"configure_requested");JSONObject map=nativeIO.read(NativeBridge.CLUSTER);map.getJSONObject("clusterMap").put(id,updated);nativeIO.write(NativeBridge.CLUSTER,map);writeMarker(nextMarker);
+   endpointPhase(journal,"refresh_requested");nativeIO.updateClusters();
+   JSONObject live=nativeIO.read(NativeBridge.CLUSTER);JSONObject refreshed=live.getJSONObject("clusterMap").getJSONObject(id);
+   if(!id.equals(live.getString("curClusterId")))throw new IOException("Native refresh selected another server");
+   if(!NativeBridge.canonical(refreshed.getJSONObject("clusterHost")).equals(NativeBridge.canonical(updated.getJSONObject("clusterHost")))||!NativeBridge.canonical(refreshed.getJSONObject("ossConfig")).equals(NativeBridge.canonical(updated.getJSONObject("ossConfig"))))throw new IOException("Native refresh did not keep the updated endpoints");
+   JSONObject a=nativeIO.account();if(!a.optBoolean("loggedIn")||!profile.getString("nativeUid").equals(a.optString("uid")))throw new IOException("Native account changed during the update");
+   state.write("installed-cluster",refreshed);state.write("installed-marker",new JSONObject().put("sha256",NativeBridge.hex(java.security.MessageDigest.getInstance("SHA-256").digest(nextMarker))));state.write("profile",profile);
+   nativeIO.flags(flags);endpointPhase(journal,"applied");
+   // Notes, the launcher and Reader cache the cluster in memory and reload it on these broadcasts.
+   for(String action:new String[]{"SERVER_INFO_CHANGED_ACTION","ONYX_MATERIAL_HOST_BASEURL_CHANGED_ACTION"})context.sendBroadcast(new android.content.Intent(action));
+  }catch(Exception e){
+   // A failed refresh saves nothing natively, so restoring our two copies is enough; a refresh
+   // that does succeed here must not be what decides whether sync settings come back.
+   try{JSONObject map=nativeIO.read(NativeBridge.CLUSTER);map.getJSONObject("clusterMap").put(id,plan.getJSONObject("entry"));nativeIO.write(NativeBridge.CLUSTER,map);writeMarker(markerBytes);try{nativeIO.updateClusters();}catch(Exception refresh){journal.put("rollbackRefresh","unavailable");}nativeIO.flags(flags);journal.put("failure","Update failed; previous endpoints restored");endpointPhase(journal,"rolled_back");}
+   catch(Exception rollback){journal.put("failure","Update and rollback both failed; synchronization remains paused");endpointPhase(journal,"failed");}
+   throw e;
+  }
+  return "Endpoints updated ("+plan.getJSONArray("changes").length()+" values). Sync settings restored. If Notes or Settings was already open, close and reopen it to pick them up.";
+ }
+ private void endpointPhase(JSONObject journal,String phase)throws Exception {journal.put("phase",phase).put("updatedAt",System.currentTimeMillis());state.write("endpoint-update",journal);}
  JSONObject recoveryStatus()throws Exception {JSONObject p=state.read("profile");if(p==null)throw new IOException("Enroll a server first");return ServerClient.request(p.getString("serverURL")+"/api/v1/boox/device/status","GET",null,p.getString("companionToken"));}
  private JSONObject audioProfile()throws Exception {
   storage();nativeIO.compatible();JSONObject p=state.read("profile"),j=state.read("transition");
