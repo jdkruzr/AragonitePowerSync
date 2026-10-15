@@ -14,7 +14,7 @@ final class AccountCacheRecovery {
  }
  static long id(Map<String,Object> row) throws IOException {
   Object value=row.get("id");
-  if(!(value instanceof Number)||((Number)value).longValue()<=0)throw new IOException("Invalid cached account row ID");
+  if(!(value instanceof Number)||((Number)value).longValue()<=0)throw new UserError(R.string.error_invalid_cached_account_row_id);
   return ((Number)value).longValue();
  }
  static boolean affected(Map<String,Object> row,String uid) {
@@ -24,9 +24,9 @@ final class AccountCacheRecovery {
   Map<String,Object> result=new HashMap<>(row);result.put("loggedIn",0L);return result;
  }
  private static Map<Long,Map<String,Object>> index(List<Map<String,Object>> rows)throws IOException {
-  if(rows.size()>32)throw new IOException("Unexpected native account cache size");
+  if(rows.size()>32)throw new UserError(R.string.error_unexpected_native_account_cache_size);
   Map<Long,Map<String,Object>> result=new LinkedHashMap<>();
-  for(Map<String,Object> row:rows)if(result.put(id(row),row)!=null)throw new IOException("Duplicate cached account row ID");
+  for(Map<String,Object> row:rows)if(result.put(id(row),row)!=null)throw new UserError(R.string.error_duplicate_cached_account_row_id);
   return result;
  }
  static List<Map<String,Object>> capture(List<Map<String,Object>> rows,String uid)throws IOException {
@@ -45,13 +45,13 @@ final class AccountCacheRecovery {
  }
  static void verifyBeforeLogin(List<Map<String,Object>> saved,List<Map<String,Object>> current,String uid)throws IOException {
   Map<Long,Map<String,Object>> old=index(saved),now=index(capture(current,uid));
-  if(!old.keySet().equals(now.keySet()))throw new IOException("Account cache changed before login; snapshot preserved");
+  if(!old.keySet().equals(now.keySet()))throw new UserError(R.string.error_account_cache_changed_before_login_snapshot_preserved);
   for(Long id:old.keySet())if(!onlyLogoutChanged(now.get(id),old.get(id)))
-   throw new IOException("Cached credentials changed before login; snapshot preserved");
+   throw new UserError(R.string.error_cached_credentials_changed_before_login_snapshot_preserved);
  }
  static void restore(List<Map<String,Object>> saved,Store store,String uid,String custom)throws Exception {
   Map<Long,Map<String,Object>> originals=index(saved);
-  for(Map<String,Object> row:saved)if(!affected(row,uid))throw new IOException("Saved account outside restoration scope");
+  for(Map<String,Object> row:saved)if(!affected(row,uid))throw new UserError(R.string.error_saved_account_outside_restoration_scope);
   List<Map<String,Object>> initial=store.read();index(initial);
   Set<Object> savedUIDs=new HashSet<>();for(Map<String,Object> row:saved)savedUIDs.add(row.get("uid"));
   List<Map<String,Object>> owned=new ArrayList<>();
@@ -60,12 +60,12 @@ final class AccountCacheRecovery {
    if(uid.equals(row.get("uid"))&&custom.equals(row.get("clusterId"))) {owned.add(row);continue;}
    Map<String,Object> old=originals.get(id(row));
    if(old!=null) {
-    if(!onlyLogoutChanged(row,old))throw new IOException("Original account row changed outside PowerSync; snapshot preserved");
+    if(!onlyLogoutChanged(row,old))throw new UserError(R.string.error_original_account_row_changed_outside_powersync_snapshot);
    } else if(affected(row,uid)||savedUIDs.contains(row.get("uid"))) {
-    throw new IOException("Account cache changed outside PowerSync; snapshot preserved");
+    throw new UserError(R.string.error_account_cache_changed_outside_powersync_snapshot_preserved);
    }
   }
-  if(owned.size()>1)throw new IOException("Ambiguous custom account cache; snapshot preserved");
+  if(owned.size()>1)throw new UserError(R.string.error_ambiguous_custom_account_cache_snapshot_preserved);
   List<Map<String,Object>> expected=new ArrayList<>(initial);
   for(Map<String,Object> row:owned) {
    unchanged(store,expected);store.delete(row);expected.remove(row);
@@ -80,6 +80,6 @@ final class AccountCacheRecovery {
   unchanged(store,expected); // Includes untouched unrelated accounts, not only restored rows.
  }
  private static void unchanged(Store store,List<Map<String,Object>> expected)throws Exception {
-  if(!index(store.read()).equals(index(expected)))throw new IOException("Account cache changed during restoration; snapshot preserved");
+  if(!index(store.read()).equals(index(expected)))throw new UserError(R.string.error_account_cache_changed_during_restoration_snapshot_preserved);
  }
 }

@@ -16,16 +16,16 @@ final class NativeAccountBackup {
  private JSONArray rows(String selection,String... args)throws Exception {
   JSONArray rows=new JSONArray();
   try(Cursor c=bridge.context.getContentResolver().query(NativeBridge.ACCOUNTS,null,selection,args,null)) {
-   if(c==null)throw new IOException("Native account cache unavailable");
+   if(c==null)throw new UserError(R.string.error_native_account_cache_unavailable);
    while(c.moveToNext()) {
-    if(rows.length()>=32)throw new IOException("Unexpected native account cache size");
+    if(rows.length()>=32)throw new UserError(R.string.error_unexpected_native_account_cache_size);
     JSONObject row=new JSONObject();
     for(int i=0;i<c.getColumnCount();i++) {
      Object value=switch(c.getType(i)) {
       case Cursor.FIELD_TYPE_NULL -> JSONObject.NULL;
       case Cursor.FIELD_TYPE_INTEGER -> c.getLong(i);
       case Cursor.FIELD_TYPE_STRING -> c.getString(i);
-      default -> throw new IOException("Unsupported account cache field");
+      default -> throw new UserError(R.string.error_unsupported_account_cache_field);
      };
      row.put(c.getColumnName(i),value);
     }
@@ -57,14 +57,14 @@ final class NativeAccountBackup {
   JSONObject active=bridge.account();
   if(active.optBoolean("loggedIn")&&uid.equals(active.optString("uid"))&&
      saved.stream().filter(row->uid.equals(row.get("uid"))&&active.optString("clusterId").equals(row.get("clusterId"))).count()!=1)
-   throw new IOException("Cannot preserve your current BOOX account");
+   throw new UserError(R.string.error_cannot_preserve_your_current_boox_account);
   JSONArray result=new JSONArray();for(Map<String,Object> row:saved)result.put(json(row));return result;
  }
  // Compare every column, including credentials, without putting values in errors.
  private static String selection(Map<String,Object> row,List<String> args)throws IOException {
   List<String> clauses=new ArrayList<>();
   for(String key:new TreeSet<>(row.keySet())) {
-   if(!key.matches("[A-Za-z_][A-Za-z0-9_]*"))throw new IOException("Unsupported native account column");
+   if(!key.matches("[A-Za-z_][A-Za-z0-9_]*"))throw new UserError(R.string.error_unsupported_native_account_column);
    Object value=row.get(key);
    if(value==null)clauses.add(key+" IS NULL");
    else {clauses.add(key+"=?");args.add(value.toString());}
@@ -81,7 +81,7 @@ final class NativeAccountBackup {
    if(value==JSONObject.NULL)values.putNull(key);
    else if(value instanceof Number)values.put(key,((Number)value).longValue());
    else if(value instanceof String)values.put(key,(String)value);
-   else throw new IOException("Unsupported saved account field");
+   else throw new UserError(R.string.error_unsupported_saved_account_field);
   }
   return values;
  }
@@ -95,29 +95,29 @@ final class NativeAccountBackup {
     if(previous.getString("uid").equals(old.get("uid"))&&previous.getString("clusterId").equals(old.get("clusterId")))continue;
     List<Map<String,Object>> actual=maps(rows("id=?",String.valueOf(AccountCacheRecovery.id(old))));
     if(actual.size()!=1||!actual.get(0).equals(AccountCacheRecovery.loggedOut(old)))
-     throw new IOException("Other cached accounts still need restoration; snapshot preserved");
+     throw new UserError(R.string.error_other_cached_accounts_still_need_restoration_snapshot);
    }
    return true;
   }
-  if(active.optBoolean("loggedIn"))throw new IOException("An account is still active; preserve the snapshot and inspect before restoring credentials");
+  if(active.optBoolean("loggedIn"))throw new UserError(R.string.error_an_account_is_still_active_preserve_the);
   new AccountCacheRecovery.Store() {
    public List<Map<String,Object>> read()throws Exception {return maps(rows(null));}
    public void delete(Map<String,Object> expected)throws Exception {
     List<String> args=new ArrayList<>();String where=selection(expected,args);
     if(bridge.context.getContentResolver().delete(NativeBridge.ACCOUNTS,where,args.toArray(new String[0]))!=1)
-     throw new IOException("Custom account changed during removal; snapshot preserved");
+     throw new UserError(R.string.error_custom_account_changed_during_removal_snapshot_preserved);
    }
    public void update(Map<String,Object> expected,Map<String,Object> restored)throws Exception {
     List<String> args=new ArrayList<>();String where=selection(expected,args);
     if(bridge.context.getContentResolver().update(NativeBridge.ACCOUNTS,values(json(restored)),where,args.toArray(new String[0]))!=1)
-     throw new IOException("Account changed during restoration; snapshot preserved");
+     throw new UserError(R.string.error_account_changed_during_restoration_snapshot_preserved);
    }
    public void insert(Map<String,Object> restored)throws Exception {
     if(rows("id=?",String.valueOf(AccountCacheRecovery.id(restored))).length()!=0)
-     throw new IOException("Original account row ID is occupied; snapshot preserved");
+     throw new UserError(R.string.error_original_account_row_id_is_occupied_snapshot);
     android.net.Uri inserted=bridge.context.getContentResolver().insert(NativeBridge.ACCOUNTS,values(json(restored)));
     if(inserted==null||android.content.ContentUris.parseId(inserted)!=AccountCacheRecovery.id(restored))
-     throw new IOException("Account cache restoration failed; snapshot preserved");
+     throw new UserError(R.string.error_account_cache_restoration_failed_snapshot_preserved);
    }
    void restoreAll()throws Exception {AccountCacheRecovery.restore(maps(saved),this,uid,custom);}
   }.restoreAll();

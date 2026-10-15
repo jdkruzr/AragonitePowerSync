@@ -5,7 +5,11 @@ val signingProps = Properties().apply { if(signingFile.exists()) signingFile.inp
 android {
  namespace = "dev.aragonite.powersync.client"
  compileSdk = 35
- defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 35; targetSdk = 35; versionCode = 9; versionName = "0.1.8" }
+ defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 35; targetSdk = 35; versionCode = 10; versionName = "0.2.0" }
+ // Per-app language (Android Settings → App languages) lists every values-<locale> folder.
+ androidResources { generateLocaleConfig = true }
+ // New user-facing text belongs in strings.xml, and every language must cover every string.
+ lint { error += listOf("HardcodedText", "SetTextI18n", "MissingTranslation", "StringFormatInvalid", "StringFormatMatches", "MissingQuantity") }
  buildFeatures { buildConfig = true }
  signingConfigs { if(signingFile.exists()) create("persistent") { storeFile = File(signingProps.getProperty("storeFile")); storePassword = signingProps.getProperty("storePassword"); keyAlias = signingProps.getProperty("keyAlias"); keyPassword = signingProps.getProperty("keyPassword") } }
  buildTypes { getByName("release") { if(signingFile.exists()) signingConfig = signingConfigs.getByName("persistent") } }
