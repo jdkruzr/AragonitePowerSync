@@ -59,7 +59,7 @@ final class TransitionController {
    catch(Exception rollback){journal.put("failure","Update and rollback both failed; synchronization remains paused");endpointPhase(journal,"failed");}
    throw e;
   }
-  return "Endpoints updated ("+plan.getJSONArray("changes").length()+" values). Sync settings restored. If Notes or Settings was already open, close and reopen it to pick them up.";
+  return "Endpoints updated ("+plan.getJSONArray("changes").length()+" values). Sync settings restored. Restart the tablet so every BOOX app (including Settings and firmware updates) uses the new endpoints.";
  }
  private void endpointPhase(JSONObject journal,String phase)throws Exception {journal.put("phase",phase).put("updatedAt",System.currentTimeMillis());state.write("endpoint-update",journal);}
  JSONObject recoveryStatus()throws Exception {JSONObject p=state.read("profile");if(p==null)throw new IOException("Enroll a server first");return ServerClient.request(p.getString("serverURL")+"/api/v1/boox/device/status","GET",null,p.getString("companionToken"));}
