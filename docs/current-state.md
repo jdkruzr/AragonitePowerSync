@@ -1,5 +1,18 @@
 # PowerSync implementation state
 
+2026-10-18: PowerSync **0.3.0 (code 11)** implements the streamlined setup and
+state-driven connection screen on `feature/powersync-streamlined-setup`. Both
+sync domains enable only after successful connection, with a separate explicit
+Enable action for paused existing connections. Permission/enrollment continuation,
+process-owned operations, background endpoint checks, secondary recovery screens
+and English/Spanish resources are included. All 38 unit tests, release lint and
+signed assembly pass. Palma in-place upgrade, preservation checks, pause/resume,
+UI/language/restart checks and native notebook/reading smoke checks against the
+deployed Server pass. Lumi in-place upgrade, inventory preservation and
+UI/language/large-text/restart checks also pass. Physical first-time connection
+and fault-injection qualification remain pending. One labeled blank smoke
+notebook is retained. See [implementation and evidence](streamlined-setup-20261018.md).
+
 2026-10-15: PowerSync 0.2.0 (code 10) is internationalized: all user-facing text in `strings.xml`, errors as `UserError` resource IDs, per-app language support, lint guards, and a first Spanish catalog (183 entries, Claude-drafted, needs native review). Verified in Spanish on the Palma; installed on both tablets (language left on system default). See [i18n plan](i18n-plan-20261015.md) and [translating](translating.md).
 
 2026-10-15: PowerSync 0.1.8 (code 9) adds **Update server endpoints**, an in-place update of the connected custom cluster's endpoint values (no switch, no sign-in): fetches `GET /api/v1/boox/device/endpoints`, validates, previews changes, journals previous entry/marker/flags in `endpoint-update`, rewrites marker and clusterMap entry, requires ksync refresh (81) success, verifies, restores flags, broadcasts cluster-reload actions; rolls back on failure. Evidence basis (decompile): 81 rebuilds the cluster list from Onyx's index plus the marker, keeps `curClusterId` unless the id vanishes (which logs out), and does not log out otherwise. Applied on Palma then Lumi on 2026-10-15: exactly four values changed (cloud data, log, shop to stock Onyx; material host to Alexandria's Template Hub page), account and selection preserved, after-states identical; firmware checks reach Onyx after a reboot. Client tests (23), build and lint pass.

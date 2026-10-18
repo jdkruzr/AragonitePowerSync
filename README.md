@@ -13,16 +13,21 @@ Release signing requires the persistent private configuration at
 `~/.local/share/aragonite-powersync/signing/client.properties`; keep that key for
 future upgrades. Install in place with
 `adb -s SERIAL install -r client/build/outputs/apk/release/client-release.apk`.
-Grant native configuration file access, enroll using the server's single-use
-code, review sync choices, then Connect. Return works without the custom server.
+Enter the server address and single-use code, then choose **Connect to Alexandria**.
+Follow the permission prompt and confirm the destination. PowerSync enables notebook
+and reading sync after connecting, preserving individually excluded content.
+Existing connections open directly to status; opening or upgrading the app never
+changes paused sync settings. **Enable notebook and reading sync** resumes both
+domains explicitly. Manage connection contains offline return; Troubleshooting
+contains maintenance, audio recovery, and technical details.
 Never uninstall or clear data to work around a signature mismatch.
 
 See [product results and limits](docs/product-implementation-results.md),
 [application design](docs/powersync-app-design.md) and
 [Alexandria server setup](../AragoniteAlexandriaServer/docs/boox-native-setup.md).
-Product setup tests keep custom-server sync off; they are separate from previous
-native content-transfer experiments. Rendering, general content authoring and
-whole-library import are unfinished.
+See [0.3.0 validation](docs/streamlined-setup-20261018.md) for the current upgrade
+and native-sync smoke evidence and remaining qualification limits. PowerSync
+configures native BOOX sync; it does not itself render or author notebook content.
 
 ## Diagnostic probe
 
