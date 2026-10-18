@@ -31,8 +31,12 @@ Release: version 0.3.0, version code 11, existing signing identity and package.
 The Server wording companion is on `feature/powersync-setup-copy` in
 `/home/jtd/AragoniteAlexandriaServer-powersync-setup`. It updates setup/help/audio
 recovery directions and both catalogs, retaining instructions for older clients.
-It is **not deployed**; the live application tests used the existing deployed
-Server. The original Server checkout and its quality branch are unchanged.
+It was subsequently deployed at the owner's request as `55ac1ce-powersync1`.
+Fresh affected PostgreSQL/S3 race tests and 10 live public-site checks pass,
+including English/Spanish enrollment instructions. The earlier device tests
+used the previous Server build. The original Server checkout and its quality
+branch are unchanged. See the Server companion branch's
+`docs/powersync/20261018/deployment.json` for deployment and rollback evidence.
 
 ## Verification
 
