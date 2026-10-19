@@ -31,6 +31,13 @@ domains explicitly. Manage connection contains offline return; Troubleshooting
 contains maintenance, audio recovery, and technical details.
 Never uninstall or clear data to work around a signature mismatch.
 
+Version 0.3.3 preserves Library entries even when their book files are not downloaded.
+If a connection stopped after switching servers, **Resume connection** restores
+missing catalog entries from the original saved baseline and completes sign-in.
+It retains existing entries, checks identity conflicts and verifies restored data.
+See [catalog recovery and Go 6 II results](docs/catalog-recovery-20261019.md).
+
+
 See [product results and limits](docs/product-implementation-results.md),
 [application design](docs/powersync-app-design.md) and
 [Alexandria server setup](../AragoniteAlexandriaServer/docs/boox-native-setup.md).

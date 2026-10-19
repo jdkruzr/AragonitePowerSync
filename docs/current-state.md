@@ -1,11 +1,22 @@
 # PowerSync implementation state
 
-2026-10-19: **Go 6 II enrollment currently interrupted after native cluster switch**.
+2026-10-19: **PowerSync 0.3.3 (code 14) fixes cloud-only Library preservation and
+recovers the Go 6 II connection**. Catalog restoration no longer requires local
+book files. Resume connection uses the original baseline/enrollment, with identity,
+configuration, marker, collision and exact readback checks. All 128 baseline book
+UUIDs are present afterward (140 total rows as sync proceeds); the saved catalog
+digest and notebook fingerprint are unchanged. Native account/configuration match,
+phase is active, and notebook/Reader sync are enabled. Fresh 53 unit tests, lint
+(0 errors / 12 existing warnings), signed build and two device read/service checks
+pass. This is locally installed; the published GitHub release remains 0.3.1.
+See [implementation and recovery evidence](catalog-recovery-20261019.md).
+
+2026-10-19: **Go 6 II enrollment interruption diagnosed (resolved by 0.3.3 above)**.
 Read-only diagnosis found 104 Reader catalog rows absent relative to the saved
 128-row baseline; 103 referenced local files are unavailable. The repair path
 incorrectly requires a file for every saved catalog entry, including cloud
 references. Baseline metadata remains saved, notebook fingerprint matches, native
-sign-in is incomplete and both sync flags are off. No repair is deployed yet.
+sign-in was incomplete and both sync flags were off at diagnosis.
 See [diagnosis and required repair](go6-enrollment-20261019.md).
 
 2026-10-19: **PowerSync 0.3.2 (code 13) removes firmware allowlists**, per owner

@@ -157,6 +157,12 @@ final class PowerSyncCoordinator {
             message = text(R.string.connection_complete);
         }, true);
     }
+    void resumeConnection() {
+        run(R.string.progress_connecting, () -> {
+            controller.resumeConnection();
+            message = text(R.string.connection_complete);
+        }, true);
+    }
     void enableSync() { run(R.string.progress_enabling, () -> { controller.enableSync(); message = text(R.string.sync_enabled); }, false); }
     void restore() {
         run(R.string.progress_restoring, () -> {

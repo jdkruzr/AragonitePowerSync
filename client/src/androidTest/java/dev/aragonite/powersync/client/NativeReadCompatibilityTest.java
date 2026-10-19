@@ -52,12 +52,16 @@ public class NativeReadCompatibilityTest extends Instrumentation {
         org.json.JSONArray before = baseline.getJSONArray("catalog"), now = controller.nativeIO.catalog();
         java.util.Set<String> present = new java.util.HashSet<>();
         for (int i = 0; i < now.length(); i++) present.add(now.getJSONObject(i).getString("uuid"));
-        int missing = 0, missingFile = 0, emptyPath = 0, cloudReferences = 0, fallbackFiles = 0;
+        report.append("baselineCatalogDigest=").append(NativeBridge.hex(java.security.MessageDigest.getInstance("SHA-256").digest(NativeBridge.canonical(before).getBytes(java.nio.charset.StandardCharsets.UTF_8)))).append('\n');
+        java.util.Map<Long, String> currentIds = new java.util.HashMap<>();
+        for (int i = 0; i < now.length(); i++) currentIds.put(now.getJSONObject(i).getLong("id"), now.getJSONObject(i).getString("uuid"));
+        int missing = 0, missingFile = 0, emptyPath = 0, cloudReferences = 0, fallbackFiles = 0, conflicts = 0;
         java.util.Map<Integer, Integer> sources = new java.util.TreeMap<>();
         for (int i = 0; i < before.length(); i++) {
             org.json.JSONObject row = before.getJSONObject(i);
             if (present.contains(row.getString("uuid"))) continue;
             missing++;
+            if (currentIds.containsKey(row.getLong("id"))) conflicts++;
             if (!row.optString("cloudId").isEmpty() || !row.optString("uniqueCloudId").isEmpty()) cloudReferences++;
             if (new java.io.File(row.optString("nocasePath")).isFile()) fallbackFiles++;
             int source = row.optInt("fetchSource");
@@ -70,7 +74,7 @@ public class NativeReadCompatibilityTest extends Instrumentation {
         }
         report.append("baselineBooks=").append(before.length()).append("; currentBooks=").append(now.length())
             .append("; missingRows=").append(missing).append("; missingFiles=").append(missingFile)
-            .append("; emptyPaths=").append(emptyPath).append('\n');
+            .append("; emptyPaths=").append(emptyPath).append("; occupiedMissingIds=").append(conflicts).append('\n');
         report.append("missingRowsWithCloudReferences=").append(cloudReferences)
             .append("; existingFallbackPaths=").append(fallbackFiles)
             .append("; fetchSourceCounts=").append(sources).append('\n');

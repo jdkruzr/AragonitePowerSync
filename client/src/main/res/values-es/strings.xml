@@ -41,7 +41,6 @@
         <item quantity="other">Direcciones actualizadas (%d valores). Se restauraron los ajustes de sincronización. Reinicia la tableta para que todas las aplicaciones de BOOX (incluidos los Ajustes y las actualizaciones de firmware) usen las nuevas direcciones.</item>
     </plurals>
     <!-- Errors shown in the status line -->
-    <string name="error_a_pre_transition_book_is_missing_preserve">Falta un libro de antes del cambio; conserva la configuración guardada y revísala antes de continuar</string>
     <string name="error_a_previous_endpoint_update_was_interrupted_inspect">Una actualización anterior de las direcciones del servidor se interrumpió; revísala antes de volver a actualizar</string>
     <string name="error_a_transition_already_exists_use_return_to">Ya hay un cambio en curso; usa Volver al servidor anterior</string>
     <string name="error_account_cache_changed_before_login_snapshot_preserved">La caché de cuentas cambió antes de iniciar sesión; se conservó la copia de seguridad</string>
@@ -210,4 +209,7 @@
     <string name="open_browser_failed">No se pudo abrir Alexandria. Abre la dirección del servidor en el navegador.</string>
     <string name="confirm_connection">¿Conectar con %1$s?\n\nPowerSync guardará la configuración anterior, cambiará de servidor y activará la sincronización de cuadernos y lectura. Las notas existentes permanecerán en este dispositivo y los cuadernos y libros excluidos individualmente seguirán excluidos.</string>
     <string name="update_confirmation">¿Actualizar los ajustes de conexión publicados por tu servidor? PowerSync pausará brevemente la sincronización, verificará los nuevos ajustes y restaurará tus preferencias actuales de sincronización. Tu cuenta seguirá conectada. Reinicia la tableta después de una actualización correcta para que todas las aplicaciones de BOOX usen los nuevos ajustes.</string>
+    <string name="error_catalog_identity_conflict">Las entradas de la biblioteca tienen identidades en conflicto; se ha conservado el catálogo guardado.</string>
+    <string name="resume_connection">Reanudar conexión</string>
+    <string name="resume_connection_explanation">Continúa la conexión guardada y restaura las entradas de la biblioteca. No es necesario descargar los libros.</string>
 </resources>

@@ -152,6 +152,10 @@ public final class MainActivity extends Activity implements PowerSyncCoordinator
                 text(state.snapshot.optBoolean("endpointInterrupted") ? R.string.endpoint_interrupted : R.string.attention_explanation);
                 if (!coordinator.statusError.isEmpty()) text(coordinator.statusError);
                 if (!state.hasAccess) button(R.string.grant_access, this::requestAccess);
+                if (state.canResume) {
+                    text(R.string.resume_connection_explanation);
+                    button(R.string.resume_connection, coordinator::resumeConnection);
+                }
                 if (state.canRestore) button(R.string.button_return, () -> showPrompt(new PowerSyncCoordinator.Prompt("restore", null)));
                 button(R.string.button_refresh_status, coordinator::refresh);
             }

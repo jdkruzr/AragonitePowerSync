@@ -1,5 +1,7 @@
 # Go 6 II enrollment interruption — 2026-10-19
 
+**Resolved later the same day in PowerSync 0.3.3:** see [patch and successful recovery](catalog-recovery-20261019.md). The findings below record the pre-recovery state.
+
 Read-only investigation after the owner attempted enrollment with PowerSync 0.3.2.
 The current screen reported `A pre-transition book is missing; preserve the
 baseline and inspect before continuing`.

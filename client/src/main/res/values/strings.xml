@@ -43,7 +43,6 @@
         <item quantity="other">Endpoints updated (%d values). Sync settings restored. Restart the tablet so every BOOX app (including Settings and firmware updates) uses the new endpoints.</item>
     </plurals>
     <!-- Errors shown in the status line -->
-    <string name="error_a_pre_transition_book_is_missing_preserve">A pre-transition book is missing; preserve the baseline and inspect before continuing</string>
     <string name="error_a_previous_endpoint_update_was_interrupted_inspect">A previous endpoint update was interrupted; inspect before updating again</string>
     <string name="error_a_transition_already_exists_use_return_to">A transition already exists; use Return to previous server</string>
     <string name="error_account_cache_changed_before_login_snapshot_preserved">Account cache changed before login; snapshot preserved</string>
@@ -212,4 +211,7 @@
     <string name="open_browser_failed">Could not open Alexandria. Open the server address in your browser.</string>
     <string name="confirm_connection">Connect to %1$s?\n\nPowerSync will save your previous configuration, switch servers, and enable notebook and reading sync. Existing notes stay on this device, and individually excluded notebooks and books stay excluded.</string>
     <string name="update_confirmation">Update the connection settings published by your server? PowerSync will briefly pause sync, verify the new settings, and restore your current sync preferences. Your account stays signed in. Restart the tablet after a successful update so all BOOX apps use the new settings.</string>
+    <string name="error_catalog_identity_conflict">Library entries have conflicting identities; the saved catalog has been preserved.</string>
+    <string name="resume_connection">Resume connection</string>
+    <string name="resume_connection_explanation">Continue your saved connection and restore Library entries. Books do not need to be downloaded.</string>
 </resources>

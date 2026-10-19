@@ -7,7 +7,7 @@ final class ConnectionState {
     enum Screen { SETUP, ENROLLED, CONNECTED, ATTENTION }
     final JSONObject snapshot;
     final Screen screen;
-    final boolean canRestore, hasAccess, notesEnabled, readerEnabled;
+    final boolean canRestore, canResume, hasAccess, notesEnabled, readerEnabled;
     final String server;
 
     ConnectionState(JSONObject s) {
@@ -15,6 +15,7 @@ final class ConnectionState {
         server = s.optString("serverURL");
         String phase = s.optString("phase", "not_configured");
         canRestore = s.optBoolean("hasBaseline") && !"restored".equals(phase);
+        canResume = ConnectionRecovery.canResume(s);
         hasAccess = s.optBoolean("allFilesAccess");
         JSONObject flags = s.optJSONObject("flags");
         notesEnabled = flags != null && "true".equals(flags.optString("notes"));

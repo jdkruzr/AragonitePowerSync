@@ -6,7 +6,7 @@ android {
  namespace = "dev.aragonite.powersync.client"
  compileSdk = 35
  testBuildType = "release"
- defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 33; targetSdk = 35; versionCode = 13; versionName = "0.3.2"; testInstrumentationRunner = "dev.aragonite.powersync.client.NativeReadCompatibilityTest" }
+ defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 33; targetSdk = 35; versionCode = 14; versionName = "0.3.3"; testInstrumentationRunner = "dev.aragonite.powersync.client.NativeReadCompatibilityTest" }
  // Per-app language (Android Settings → App languages) lists every values-<locale> folder.
  androidResources { generateLocaleConfig = true }
  // New user-facing text belongs in strings.xml, and every language must cover every string.
