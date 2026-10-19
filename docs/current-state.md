@@ -1,5 +1,15 @@
 # PowerSync implementation state
 
+2026-10-19: **PowerSync 0.3.2 (code 13) removes firmware allowlists**, per owner
+request. Unknown model/API/ksync combinations attempt the native interfaces;
+firmware details are logged, with actual interface and preservation checks intact.
+Fresh 41 unit tests, release lint/build and two ordinary-UID read/service checks
+pass. Certificate-matched in-place installation on Go6_2/API 33/ksync 32198 opens
+to **Connect to Alexandria**; selected native configuration/account/library
+metadata hashes match before and after. No enrollment or sync writes were performed.
+This is locally built and installed; the published GitHub release below remains 0.3.1.
+See [policy and device evidence](firmware-observations-20261019.md).
+
 2026-10-19: **[PowerSync 0.3.1 is published](https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.1)**.
 Tag `v0.3.1` points to CI-tested commit `3a56327c3172880b29d275798ca9e2b77ca7e887`.
 [Actions run #2](https://github.com/jdkruzr/AragonitePowerSync/actions/runs/39224617064)

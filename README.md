@@ -5,13 +5,16 @@ Alexandria Server. PowerSync is a separate source dataset from the Alexandria cl
 
 The signed product app is `:client` (`dev.aragonite.powersync.client`). It enrolls
 with an Alexandria native BOOX server, configures stock ksync and restores its
-previous configuration offline. Qualified firmware is API 35 with Palma2_Pro_C
-ksync 32173 or Go103_2Lumi ksync 32079. Version 0.3.1 also installs on
-TabUltraCPro / Android 13 (API 33), pinned to ksync 32174. TUCP interface reads
-are checked, but full sync is **not qualified**: joining from stale device state
-reactivated deleted notebooks. See the [TUCP incident and remaining fix](docs/tucp-compatibility-20261019.md)
-before enrolling a device with an existing library. It installs beside the
-diagnostic probe.
+previous configuration offline. PowerSync 0.3.2 requires Android 13 (API 33) or
+later and attempts the native interfaces on any model/ksync version. Firmware
+combinations are diagnostic observations, not an allowlist: model, Android API,
+firmware build and ksync version are logged once per observed combination per
+process under `PowerSyncCompatibility`. Actual interface failures, response
+validation and data-preservation checks still stop failed operations.
+
+TUCP joining from stale device state reactivated deleted notebooks; this remains
+an unresolved sync issue. See the [TUCP incident and remaining fix](docs/tucp-compatibility-20261019.md).
+PowerSync installs beside the diagnostic probe.
 
 Build: `JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ./gradlew :client:assembleRelease`.
 For a signed CI artifact, run [Release build in GitHub Actions](docs/github-release-build.md).

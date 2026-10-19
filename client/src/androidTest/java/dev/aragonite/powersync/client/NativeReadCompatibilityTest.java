@@ -34,7 +34,7 @@ public class NativeReadCompatibilityTest extends Instrumentation {
     public void testNativeReads() throws Exception {
         Context context = getTargetContext();
         NativeBridge bridge = new NativeBridge(context);
-        bridge.compatible();
+        bridge.requireKsyncAvailable();
         assertNotNull(bridge.read(NativeBridge.CLUSTER).getJSONObject("clusterMap"));
         assertNotNull(bridge.read(NativeBridge.SYSTEM).getJSONObject("configMap"));
         assertTrue(bridge.flags().has("notes"));

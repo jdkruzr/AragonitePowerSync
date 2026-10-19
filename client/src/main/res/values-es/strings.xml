@@ -34,7 +34,6 @@
     <string name="yes">sí</string>
     <string name="no">no</string>
     <string name="error_server_http_status">El servidor respondió con HTTP %1$d</string>
-    <string name="error_firmware_not_qualified">Este firmware no está validado para cambiar direcciones: %1$s / API %2$d</string>
     <string name="error_native_sign_in_failed">Falló el inicio de sesión nativo (resultado %1$d)</string>
     <plurals name="endpoints_updated">
         <item quantity="one">Direcciones actualizadas (%d valor). Se restauraron los ajustes de sincronización. Reinicia la tableta para que todas las aplicaciones de BOOX (incluidos los Ajustes y las actualizaciones de firmware) usen las nuevas direcciones.</item>
@@ -149,7 +148,6 @@
     <string name="error_sign_in_to_your_boox_account_in">Inicia sesión en tu cuenta BOOX en los Ajustes nativos antes de conectar el primer dispositivo. Se necesita la identidad de tu biblioteca actual.</string>
     <string name="error_target_cluster_already_exists_inspect_instead_of">El clúster de destino ya existe; revísalo en lugar de sobrescribirlo</string>
     <string name="error_the_active_notebook_is_not_available_in">El cuaderno activo no está disponible en la biblioteca de este dispositivo</string>
-    <string name="error_this_ksync_version_needs_qualification_before_endpoint">Esta versión de ksync debe validarse antes de cambiar las direcciones</string>
     <string name="error_this_server_is_linked_to_a_different">Este servidor está vinculado a otra cuenta BOOX. Vuelve a tu servidor anterior y usa la biblioteca correspondiente.</string>
     <string name="error_too_many_audio_repairs_review_this_library">Hay demasiadas reparaciones de audio; revisa esta biblioteca en el servidor</string>
     <string name="error_unexpected_configuration_key">Clave de configuración inesperada</string>

@@ -37,7 +37,6 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="error_server_http_status">Server returned HTTP %1$d</string>
-    <string name="error_firmware_not_qualified">This firmware is not qualified for endpoint changes: %1$s / API %2$d</string>
     <string name="error_native_sign_in_failed">Native sign-in failed (result %1$d)</string>
     <plurals name="endpoints_updated">
         <item quantity="one">Endpoints updated (%d value). Sync settings restored. Restart the tablet so every BOOX app (including Settings and firmware updates) uses the new endpoints.</item>
@@ -151,7 +150,6 @@
     <string name="error_sign_in_to_your_boox_account_in">Sign in to your BOOX account in native Settings before connecting the first device. Your existing library identity is needed.</string>
     <string name="error_target_cluster_already_exists_inspect_instead_of">Target cluster already exists; inspect instead of overwriting</string>
     <string name="error_the_active_notebook_is_not_available_in">The active notebook is not available in this device’s library</string>
-    <string name="error_this_ksync_version_needs_qualification_before_endpoint">This ksync version needs qualification before endpoint changes</string>
     <string name="error_this_server_is_linked_to_a_different">This server is linked to a different BOOX account. Return to your previous server and use the matching library.</string>
     <string name="error_too_many_audio_repairs_review_this_library">Too many audio repairs; review this library on the server</string>
     <string name="error_unexpected_configuration_key">Unexpected configuration key</string>

@@ -97,7 +97,7 @@ final class PowerSyncCoordinator {
     }
     void prepare(String server, String code) {
         run(R.string.progress_checking, () -> {
-            controller.nativeIO.compatible();
+            controller.nativeIO.requireKsyncAvailable();
             ConnectionState current = new ConnectionState(controller.status());
             if (current.screen != ConnectionState.Screen.SETUP) throw new UserError(R.string.error_connection_changed);
             String base = SafeURL.base(server);

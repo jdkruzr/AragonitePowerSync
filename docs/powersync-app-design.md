@@ -42,7 +42,7 @@ Return performs native switch before exact app-owned restoration. Native account
 
 ## Compatibility and security
 
-First support the two qualified API-35 device models and captured Binder descriptors/transactions; check them before writes. The system-service ProcessBuilder route runs without shell/su/run-as. All Binder operations are bounded and run off the UI thread. Explicit bind/unbind remain on the main thread. All Files Access is requested only when native marker provisioning requires it. HTTPS/WSS use platform trust; no trust-all verifier. Secret enrollment replies stay encrypted in app-private storage. Android backup is disabled. Release signing key persists outside source control.
+Attempt native access on Android API 33 and later without model or ksync version allowlists. Log the observed model/API/build/ksync tuple for diagnosis; determine availability from actual service/provider access, Binder descriptors, responses and preservation checks. Unknown firmware does not require an override or confirmation. The system-service ProcessBuilder route runs without shell/su/run-as. All Binder operations are bounded and run off the UI thread. Explicit bind/unbind remain on the main thread. All Files Access is requested only when native marker provisioning requires it. HTTPS/WSS use platform trust; no trust-all verifier. Secret enrollment replies stay encrypted in app-private storage. Android backup is disabled. Release signing key persists outside source control.
 
 ## Checks
 
