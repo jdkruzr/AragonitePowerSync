@@ -1,0 +1,34 @@
+# GitHub Actions release builds
+
+Run **Actions → Release build → Run workflow** on `main`, or:
+
+```sh
+gh workflow run release.yml --repo jdkruzr/AragonitePowerSync --ref main
+```
+
+This manually dispatched workflow tests and lints the release variant, builds
+PowerSync's signed `:client` APK with Java 17 / Android SDK 35, and verifies the
+existing signing certificate before uploading it. Actions are pinned to commit
+hashes. Signing runs only on this repository's `main`, with a read-only token;
+there is no pull-request trigger and no automatic GitHub Release publication.
+
+The `powersync-release-N` artifact contains `PowerSync-release.apk`, its SHA-256
+checksum, source commit and signing-certificate report. Test and lint reports
+are uploaded separately. The APK retains application ID and signing identity
+for in-place upgrades; never uninstall to bypass a certificate mismatch.
+
+Repository Actions secrets (never committed) are:
+
+- `RELEASE_KEYSTORE_BASE64`: base64 of the existing release keystore.
+- `RELEASE_KEYSTORE_PASSWORD`: its store password.
+- `RELEASE_KEY_ALIAS`: the existing signing-key alias.
+- `RELEASE_KEY_PASSWORD`: its key password.
+
+The workflow reconstructs the same private signing configuration used locally,
+then removes the key and properties file even if the build fails. Neither file
+is cached or uploaded as an artifact. Keep the original local keystore backed
+up; creating a replacement key would break existing installations' upgrades.
+
+A successful CI build does not qualify a new BOOX firmware combination. In
+particular, the [TUCP stale-join limitation](tucp-compatibility-20261019.md) still
+applies to version 0.3.1.

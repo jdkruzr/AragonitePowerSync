@@ -1,5 +1,14 @@
 # PowerSync implementation state
 
+2026-10-19: **GitHub Actions release workflow added**. Manually dispatch
+`release.yml` on `main` to run release unit tests/lint and build the signed
+`:client` APK. The existing signing key is held in encrypted repository Actions
+secrets; the workflow verifies its certificate, removes temporary signing files
+and uploads the APK/checksum/source commit and separate test/lint reports.
+Signing is restricted to this repository's `main`, with a read-only token and
+pinned actions. It does not publish a GitHub Release. Actionlint and synthetic
+Java Properties round-trip checks pass. See [CI release builds](github-release-build.md).
+
 2026-10-19 UTC (October 18 local): **TUCP installation and stale-join incident**.
 Signed PowerSync 0.3.1 (code 12) installs on Android 13; native support pins
 TabUltraCPro/API 33/ksync 32174 alongside the existing Palma/Lumi pairs.

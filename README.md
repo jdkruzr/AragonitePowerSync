@@ -14,6 +14,7 @@ before enrolling a device with an existing library. It installs beside the
 diagnostic probe.
 
 Build: `JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 ./gradlew :client:assembleRelease`.
+For a signed CI artifact, run [Release build in GitHub Actions](docs/github-release-build.md).
 Release signing requires the persistent private configuration at
 `~/.local/share/aragonite-powersync/signing/client.properties`; keep that key for
 future upgrades. Install in place with
