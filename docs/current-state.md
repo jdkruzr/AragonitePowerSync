@@ -1,5 +1,16 @@
 # PowerSync implementation state
 
+2026-10-19 18:01 UTC: **Go 6 II sync observation running for 30 minutes**, sampled
+every 30 seconds by user service `powersync-go6-sync-20261019`. Read-only catalog
+and native-log aggregates are in `artifacts/go6-sync-progress-20261019/monitor/`.
+Initial samples: 140 Reader rows, 1,107 note/folder rows, ongoing metadata pulls
+and successful native transfer-batch reports. Earlier HTTP/2 reset/retry entries
+remain in the overlapping log window; their presence is not proof of a current
+stall. No global completion percentage or full-resource completeness is claimed.
+The observer changes no sync settings and exits after its bounded interval.
+Use `scripts/observe-native-sync.py` and inspect the status file/service for fresh
+results; this note records startup, not successful completion of the interval.
+
 2026-10-19: **PowerSync 0.3.3 (code 14) fixes cloud-only Library preservation and
 recovers the Go 6 II connection**. Catalog restoration no longer requires local
 book files. Resume connection uses the original baseline/enrollment, with identity,
