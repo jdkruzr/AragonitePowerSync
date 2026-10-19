@@ -1,5 +1,16 @@
 # PowerSync implementation state
 
+2026-10-19: **[PowerSync 0.3.1 is published](https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.1)**.
+Tag `v0.3.1` points to CI-tested commit `3a56327c3172880b29d275798ca9e2b77ca7e887`.
+[Actions run #2](https://github.com/jdkruzr/AragonitePowerSync/actions/runs/39224617064)
+passed 40 tests, lint (0 errors / 12 existing warnings), signed assembly and
+certificate verification. The release includes the original CI APK, checksum,
+source commit and certificate report. Anonymous download was checked against
+SHA-256 `de6de581e711eae682d9a02a44b22b3a7520b9423c6eb5e6e21b5dbf6a7036c8`;
+application ID, version 0.3.1/code 12 and original signing identity also match.
+Release notes prominently retain the unresolved TUCP stale-join limitation.
+Publishing was a separate step; manual CI dispatch still builds artifacts only.
+
 2026-10-19: **GitHub Actions release workflow added**. Manually dispatch
 `release.yml` on `main` to run release unit tests/lint and build the signed
 `:client` APK. The existing signing key is held in encrypted repository Actions

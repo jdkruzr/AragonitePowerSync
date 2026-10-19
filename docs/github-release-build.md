@@ -32,3 +32,17 @@ up; creating a replacement key would break existing installations' upgrades.
 A successful CI build does not qualify a new BOOX firmware combination. In
 particular, the [TUCP stale-join limitation](tucp-compatibility-20261019.md) still
 applies to version 0.3.1.
+
+## Published releases
+
+A successful Actions run creates build artifacts; publishing them to the
+repository's Releases page is a separate step. The first published release is
+[PowerSync 0.3.1](https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.1),
+using the signed APK from [run #2](https://github.com/jdkruzr/AragonitePowerSync/actions/runs/39224617064).
+
+For publication, download the successful run's artifact, verify its checksum,
+source commit, application version and original signing certificate, and attach
+the APK and verification files to a GitHub Release targeting that exact source
+commit. Publish with version-specific release notes and known limitations.
+Verify the public asset download afterwards. Do not rebuild locally and silently
+substitute a different binary for the CI-tested APK.
