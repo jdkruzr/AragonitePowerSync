@@ -1,5 +1,13 @@
 # PowerSync implementation state
 
+2026-10-19: **Go 6 II enrollment currently interrupted after native cluster switch**.
+Read-only diagnosis found 104 Reader catalog rows absent relative to the saved
+128-row baseline; 103 referenced local files are unavailable. The repair path
+incorrectly requires a file for every saved catalog entry, including cloud
+references. Baseline metadata remains saved, notebook fingerprint matches, native
+sign-in is incomplete and both sync flags are off. No repair is deployed yet.
+See [diagnosis and required repair](go6-enrollment-20261019.md).
+
 2026-10-19: **PowerSync 0.3.2 (code 13) removes firmware allowlists**, per owner
 request. Unknown model/API/ksync combinations attempt the native interfaces;
 firmware details are logged, with actual interface and preservation checks intact.
