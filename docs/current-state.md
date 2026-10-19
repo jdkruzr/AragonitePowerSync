@@ -1,5 +1,18 @@
 # PowerSync implementation state
 
+2026-10-19 UTC (October 18 local): **TUCP installation and stale-join incident**.
+Signed PowerSync 0.3.1 (code 12) installs on Android 13; native support pins
+TabUltraCPro/API 33/ksync 32174 alongside the existing Palma/Lumi pairs.
+40 unit tests, release lint/build and two ordinary-UID read/service checks pass.
+The owner then enrolled the TUCP. Native synchronization reactivated 41 server-deleted
+notebooks, including an old 1,791-page MDO planner. Automatic recognition queued
+that planner, explaining the apparent doubled library in Recognition Jobs.
+At the owner's request its deletion was republished, observed on TUCP, and all
+1,791 page jobs and their batch were removed. A persistent recognition skip
+protects that planner from automatic requeue. The other 40 reactivations and the
+stale-join reconciliation defect remain unresolved; do not call TUCP end-to-end
+sync qualified. See [evidence and cleanup](tucp-compatibility-20261019.md).
+
 2026-10-18: PowerSync **0.3.0 (code 11)** implements the streamlined setup and
 state-driven connection screen on `feature/powersync-streamlined-setup`. Both
 sync domains enable only after successful connection, with a separate explicit

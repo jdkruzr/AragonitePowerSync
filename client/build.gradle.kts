@@ -5,7 +5,8 @@ val signingProps = Properties().apply { if(signingFile.exists()) signingFile.inp
 android {
  namespace = "dev.aragonite.powersync.client"
  compileSdk = 35
- defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 35; targetSdk = 35; versionCode = 11; versionName = "0.3.0" }
+ testBuildType = "release"
+ defaultConfig { applicationId = "dev.aragonite.powersync.client"; minSdk = 33; targetSdk = 35; versionCode = 12; versionName = "0.3.1"; testInstrumentationRunner = "dev.aragonite.powersync.client.NativeReadCompatibilityTest" }
  // Per-app language (Android Settings → App languages) lists every values-<locale> folder.
  androidResources { generateLocaleConfig = true }
  // New user-facing text belongs in strings.xml, and every language must cover every string.
