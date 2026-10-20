@@ -1,0 +1,25 @@
+{
+  "version": "0.3.3",
+  "versionCode": 14,
+  "applicationId": "dev.aragonite.powersync.client",
+  "minimumSDK": 33,
+  "sourceCommit": "e720b4c867e0a56f8f66dbc29ff13ab48feece56",
+  "ciRun": "https://github.com/jdkruzr/AragonitePowerSync/actions/runs/39464804296",
+  "apkSHA256": "dcb50a6fe1b8dae9a5f9e9978deeac449d686452ffd9f81a1ab60ff2b4b02422",
+  "certificateSHA256": "f61b114923bef983aa12e876ea12bbc52f017363ef7103a96c2f978dc19aeb35",
+  "tests": {
+    "tests": 53,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Warning": 12
+  },
+  "originalCIBytesPreserved": true,
+  "releaseURL": "https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.3",
+  "publishedAt": "2026-10-20T17:20:39Z",
+  "anonymousDownloadVerified": true,
+  "tagCommitVerified": true,
+  "verifiedAt": "2026-10-20T17:21:05.053459+00:00"
+}

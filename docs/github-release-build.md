@@ -35,6 +35,13 @@ applies to version 0.3.1.
 
 ## Published releases
 
+The latest published version is [PowerSync 0.3.3](https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.3),
+using the unchanged signed APK from [run #3](https://github.com/jdkruzr/AragonitePowerSync/actions/runs/39464804296).
+It removes firmware allowlists and fixes cloud-only Library recovery. The public
+APK, source commit, package identity and signing certificate were verified;
+see [verification](releases/0.3.3/verification.json). The separate stale-device
+reconciliation issue remains documented in its release notes.
+
 A successful Actions run creates build artifacts; publishing them to the
 repository's Releases page is a separate step. The first published release is
 [PowerSync 0.3.1](https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.1),

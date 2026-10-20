@@ -1,5 +1,21 @@
 # PowerSync implementation state
 
+2026-10-20: **[PowerSync 0.3.3 is published](https://github.com/jdkruzr/AragonitePowerSync/releases/tag/v0.3.3)**
+and is GitHub's latest release. Tag `v0.3.3` targets `e720b4c867e0a56f8f66dbc29ff13ab48feece56`.
+[CI run #3](https://github.com/jdkruzr/AragonitePowerSync/actions/runs/39464804296)
+passed 53 release unit tests, lint (0 errors / 12 warnings), signed assembly and
+certificate verification. The original CI APK is published with checksum,
+source commit and signing report. Anonymous public download matches SHA-256
+`dcb50a6fe1b8dae9a5f9e9978deeac449d686452ffd9f81a1ab60ff2b4b02422`;
+version 0.3.3/code 14, application ID and original signing identity match.
+This includes removal of firmware allowlists and cloud-only Library recovery.
+Android 13 remains the minimum; actual native interface/preservation checks remain.
+The separate stale-device notebook-reactivation issue remains in the release notes.
+No device installation was performed during publication. See
+[release verification](releases/0.3.3/verification.json) and
+[release notes](releases/0.3.3/release-notes.md). The older local-only/public-0.3.1
+statements below describe their historical checkpoints.
+
 2026-10-19 18:01 UTC: **Go 6 II sync observation running for 30 minutes**, sampled
 every 30 seconds by user service `powersync-go6-sync-20261019`. Read-only catalog
 and native-log aggregates are in `artifacts/go6-sync-progress-20261019/monitor/`.
